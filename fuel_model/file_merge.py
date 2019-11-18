@@ -7,7 +7,7 @@ import datetime
 def _extract_date(url: str) -> datetime:
     filename = url.split('/')[-1].replace('.xlsx', '')
     filename_split = filename.split('-')
-    if len(filename_split < 2):
+    if len(filename_split) < 2:
         raise ValueError('Invalid URL format: {}'.format(str))
     date = filename_split[-2] + '-' + filename_split[-1]
 
@@ -18,7 +18,7 @@ def _extract_date(url: str) -> datetime:
 
 # Returns data from excel file at url
 def read_price_history(url: str) -> pd.DataFrame:
-    FORMAT_CHANGE_DATE = datetime.datetime(2017, 7)
+    FORMAT_CHANGE_DATE = datetime.datetime(2017, day=1, month=7)
     if _extract_date(url) < FORMAT_CHANGE_DATE:
         new_df = pd.read_excel(url)
     # From 7/2017 format changed to add a title in 1st row
@@ -28,8 +28,13 @@ def read_price_history(url: str) -> pd.DataFrame:
     return new_df 
 
 if __name__ == "__main__":
+    print("before format change...")
     df = read_price_history('https://data.nsw.gov.au/data/dataset/a97a46fc-2bdd-4b90-ac7f-0cb1e8d7ac3b/resource/dba9405e-ad7e-4280-b994-041485db0e88/download/service-station-price-history-june-2017.xlsx')
-    print(df.to_string())
+    print(df.head(5).to_string())
+
+    print("after format change...")
+    df = read_price_history('https://data.nsw.gov.au/data/dataset/a97a46fc-2bdd-4b90-ac7f-0cb1e8d7ac3b/resource/d59adf5e-bcf6-4b0c-82a6-41ac9ec9162a/download/service-station-price-history-july-2017.xlsx')
+    print(df.head(5).to_string())
 
 #df1 = pd.read_excel("service-station-price-history-may-2017.xlsx")
 #df2 = pd.read_excel("service-station-price-history-june-2017.xlsx")
