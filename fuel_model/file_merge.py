@@ -16,9 +16,16 @@ def _extract_date(url: str) -> datetime:
     except ValueError:
         raise ValueError('Invalid URL format: {}'.format(str))
 
-#def append_data(df: pd.DataFrame, url: str) -> pd.DataFrame:
-#
-#    new = pd.read_excel(url)
+# Appends data from excel file at url to df
+def append_data(df: pd.DataFrame, url: str) -> pd.DataFrame:
+    FORMAT_CHANGE_DATE = datetime.datetime(2017, 7)
+    if _extract_date(url) < FORMAT_CHANGE_DATE:
+        new_df = pd.read_excel(url)
+    # From 7/2017 format changed to add a title in 1st row
+    else:
+        new_df = pd.read_excel(url, skiprows=1)
+
+    return df.append(new_df, ignore_index=True)
 
 df1 = pd.read_excel("service-station-price-history-may-2017.xlsx")
 df2 = pd.read_excel("service-station-price-history-june-2017.xlsx")
