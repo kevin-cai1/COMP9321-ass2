@@ -1,4 +1,24 @@
 import pandas as pd
+import re
+import datetime
+
+# Extracts date from xlsx file in url.
+# xlsx name format: service-station-price-history-MONTH-YEAR.xlsx
+def _extract_date(url: str) -> datetime:
+    filename = url.split('/')[-1].replace('.xlsx', '')
+    filename_split = filename.split('-')
+    if len(filename_split < 2):
+        raise ValueError('Invalid URL format: {}'.format(str))
+    date = filename_split[-2] + '-' + filename_split[-1]
+
+    try:
+        return datetime.datetime.strptime(date, '%B-%Y')
+    except ValueError:
+        raise ValueError('Invalid URL format: {}'.format(str))
+
+#def append_data(df: pd.DataFrame, url: str) -> pd.DataFrame:
+#
+#    new = pd.read_excel(url)
 
 df1 = pd.read_excel("service-station-price-history-may-2017.xlsx")
 df2 = pd.read_excel("service-station-price-history-june-2017.xlsx")
