@@ -28,22 +28,24 @@ def read_price_history(url: str) -> pd.DataFrame:
     return new_df 
 
 if __name__ == "__main__":
+    df = read_price_history('https://data.nsw.gov.au/data/dataset/a97a46fc-2bdd-4b90-ac7f-0cb1e8d7ac3b/resource/dba9405e-ad7e-4280-b994-041485db0e88/download/service-station-price-history-june-2017.xlsx')
+    print(df.to_string())
 
-df1 = pd.read_excel("service-station-price-history-may-2017.xlsx")
-df2 = pd.read_excel("service-station-price-history-june-2017.xlsx")
-df3 = pd.read_excel("service-station-price-history-july-2017.xlsx", skiprows=1)
-df4 = pd.read_excel("service-station-price-history-august-2017.xlsx", skiprows=1)
-df5 = pd.read_excel("service-station-price-history-september-2017.xlsx", skiprows=1)
-
-df = df1.append(df2, ignore_index=True)
-df = df.append(df3, ignore_index=True)
-df = df.append(df4, ignore_index=True)
-df = df.append(df5, ignore_index=True)
-
-df = df.query('FuelCode == "E10"')
-df = df.query('ServiceStationName =="7-Eleven Artarmon"')
-
-df1 = df[['PriceUpdatedDate', 'Price']]
-
-df.to_excel('fuel_data_may-september_2017.xlsx')
-print(df)
+#df1 = pd.read_excel("service-station-price-history-may-2017.xlsx")
+#df2 = pd.read_excel("service-station-price-history-june-2017.xlsx")
+#df3 = pd.read_excel("service-station-price-history-july-2017.xlsx", skiprows=1)
+#df4 = pd.read_excel("service-station-price-history-august-2017.xlsx", skiprows=1)
+#df5 = pd.read_excel("service-station-price-history-september-2017.xlsx", skiprows=1)
+#
+#df = df1.append(df2, ignore_index=True)
+#df = df.append(df3, ignore_index=True)
+#df = df.append(df4, ignore_index=True)
+#df = df.append(df5, ignore_index=True)
+#
+#df = df.query('FuelCode == "E10"')
+#df = df.query('ServiceStationName =="7-Eleven Artarmon"')
+#
+#df1 = df[['PriceUpdatedDate', 'Price']]
+#
+#df.to_excel('fuel_data_may-september_2017.xlsx')
+#print(df)
