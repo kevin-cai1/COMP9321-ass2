@@ -3,3 +3,33 @@
 form {
     max-width: 600px;
 }
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .topnav {
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  .topnav a {
+    float: left;
+    color: #5D5C61;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: white
+  }
+
+  .topnav a:hover {
+    background-color: #7395AE;
+    color: white;
+  }
+
+  .topnav a.active {
+    background-color: #557A95;
+    color: white;
+  }

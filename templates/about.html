@@ -1,57 +1,10 @@
-<html lang="en">
-
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/style.css">
-
-    <!-- Header CSS -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .topnav {
-      overflow: hidden;
-      background-color: #333;
-    }
-
-    .topnav a {
-      float: left;
-      color: #5D5C61;
-      text-align: center;
-      padding: 14px 16px;
-      text-decoration: none;
-      font-size: 17px;
-      color: white
-    }
-
-    .topnav a:hover {
-      background-color: #7395AE;
-      color: white;
-    }
-
-    .topnav a.active {
-      background-color: #557A95;
-      color: white;
-    }
-    </style>
-
-    <title>Fuel Predictor</title>
-  </head>
-  <body>
-    <div class="topnav">
-        <a href="">Home</a>
-        <a class="active" href="/about">About</a>
-        <a href="#contact">Contact</a>
-    </div>
-
+{% extends 'site_wide.html' %}
+{% block body %}
+<div class="topnav">
+    <a href="/">Home</a>
+    <a class="active" href="about">About</a>
+    <a href="#contact">Contact</a>
+</div>
     <div align="center">
 
         <img name="logo" src="/static/logo.jpg" style=height:450px; width:450px; vertical-align: middle;>
@@ -66,5 +19,4 @@
             Fuel Predict allows you to specify the date you want to refuel your car.
         </p>
 
-  </body>
-</html>
+{% endblock %}

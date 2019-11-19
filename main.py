@@ -21,6 +21,7 @@ def home():
 
     return render_template("home.html", form=form)
 
+@app.route('/about', methods=['GET'])
 def about():
 
     return render_template("about.html")
