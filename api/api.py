@@ -1,4 +1,6 @@
 from flask_restplus import Resource, Api
+from flask import Flask, request
+from flask_restplus import fields
 
 from . import fuel_model
 
