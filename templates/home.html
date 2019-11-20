@@ -37,7 +37,7 @@
         <ul>
         {% for field_name, field_errors in form.errors|dictsort if field_errors %}
             {% for error in field_errors %}
-                <li style="color: red;">{{ form[field_name].label }}: {{error }} </li>
+                <li style="color: red;">{{ form[field_name].label }}: {{error}} </li>
             {% endfor %}
         {% endfor %}
         </ul>
