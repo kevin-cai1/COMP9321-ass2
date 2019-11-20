@@ -15,6 +15,8 @@ class FuelForm(FlaskForm):
 @app.route('/', methods=['POST', 'GET'] )
 def home():
     form = FuelForm()
+    services = request.form.get('check')
+    print(services)
 
     if form.validate_on_submit():
         return "Form has been submitted with fuel type: {}, postcode: {}, prediction_date: {}".format(form.fuel_type.data, form.postcode.data, form.prediction_date.data)
