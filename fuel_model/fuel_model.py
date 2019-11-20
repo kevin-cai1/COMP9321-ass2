@@ -66,7 +66,7 @@ def init_model():
     price_pred = poly3_model.predict(price_x_predict)
     
     df[price_x_predict.strftime("%d/%m/%y")] = price_pred
-    
+    df = df.groupby(['ServiceStationName'], as_index = False, inplace=True)
     return df
 
 if __name__ == "__main__":
