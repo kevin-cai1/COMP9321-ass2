@@ -30,13 +30,32 @@ location_model = api.model('location', {
     'prediction_end': fields.DateTime(description='end date for prediction period')
 })
 
+prediction_model = api.model('prediction', {
+    'station_name' : fields.String(description='Name of fuel station'),
+    'named_location' : fields.String(description='suburb or postcode'),
+    'fuel_type' : fields.String(description='Fuel type for the fuel prediction', enum=[x.name for x in FuelTypeEnum]),
+    'date' : fields.DateTime(description='date for price predicted')
+})
+
 @api.route('/fuel/predictions/<int:station_code>')
 @api.doc(params={'station_code': 'A petrol station station_code'})
 class FuelPredictionsForStation(Resource):
     @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station")
     @api.expect(search_package, validate=True)
+    @api.response(200, "Successful")
+    @api.response(404, "Station was not found")
     def post(self):
-        pass
+        if station_code not in df.index:
+            api.abort(404, "Station {} doesn't exist.".format(id))
+            
+        prediction = dict('station_name': df['ServiceStationName'],
+                          'suburb': df['Suburb'],
+                          'postcode': df['Postcode'],
+                          'fuel_type': df['FuelCode'],
+                          'price': df['Price']
+                         )
+        return prediction
+                          
 
 
 @api.route('/fuel/predictions/time/<int:station_code>')
@@ -49,7 +68,7 @@ class TimeForPriceAtStation(Resource):
 
 @api.route('/fuel/predictions/location')
 class FuelPredictionsForLocation(Resource):
-    @api.doc(description="Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)")
+    @api.doc(description="Returns fuel prediction prices for a single fuel type and a named location (suburb/postcode)")
     @api.expect(location_model, validate=True)
     def post(self):
         pass
