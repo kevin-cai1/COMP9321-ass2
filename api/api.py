@@ -45,14 +45,16 @@ class FuelPredictionsForStation(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Station was not found")
     def post(self):
-        if station_code not in df.index:
-            api.abort(404, "Station {} doesn't exist.".format(id))
+        search = request.json
+        
+        if 'station_code' not in search or search['station_code'] not in df.index:
+            api.abort(404, "Station {} doesn't exist.".format(search['station_code']))
             
-        prediction = dict('station_name': df['ServiceStationName'],
-                          'suburb': df['Suburb'],
-                          'postcode': df['Postcode'],
-                          'fuel_type': df['FuelCode'],
-                          'price': df['Price']
+        prediction = dict('station_name': df.at[station_code, 'ServiceStationName'],
+                          'suburb': df.at[station_code, 'Suburb'],
+                          'postcode': df.at[station_code, 'Postcode'],
+                          'fuel_type': df.at[station_code, 'FuelCode'],
+                          'price': df.at[station_code, '01/07/2017'] #just return test date for now
                          )
         return prediction
                           
@@ -62,7 +64,16 @@ class FuelPredictionsForStation(Resource):
 class TimeForPriceAtStation(Resource):
     @api.doc(description="Returns earliest time for a predicted match to a given price at a station")
     @api.expect(search_package, validate=True)
+    @api.response(200, "Successful")
+    @api.response(404, "Station/Prediction was not found")
     def post(self):
+        search = request.json
+        
+        if 'station_code' not in search or search['station_code'] not in df.index:
+            api.abort(404, "Station {} doesn't exist.".format(search['station_code']))
+            
+        if 'prediction_start' not in search or search['prediction_start'] not in df.columns:
+            api.abort(404, "Prediction date {} not valid.".format(search['prediction_start']))
         pass
 
 
@@ -84,4 +95,5 @@ class AverageFuelPredictionForSuburb(Resource):
 
 
 if __name__ == "__main__":
+    df = fuel_model.init_model()    # possibly make a df for each suburb?
     app.run(debug=True, port=8002)
