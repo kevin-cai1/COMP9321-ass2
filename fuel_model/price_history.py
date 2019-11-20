@@ -17,23 +17,28 @@ def _extract_date(name: str) -> datetime:
     except ValueError:
         raise ValueError('Invalid name: {}'.format(name))
 
+# Sets first row as column labels
+def _set_header(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.rename(columns=df.iloc[0])
+    return df.drop(index=df.index[0])
+
 def _clean(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(how='all')
-    df = df.interpolate(method='pad')
+    df = _set_header(df)
+    #df = df.interpolate(method='pad')
     return df
 
 # Returns data from monthly excel file at url
 def _read_month(url: str, name: str) -> pd.DataFrame:
+    date = _extract_date(name)
     FORMAT_CHANGE_DATE = datetime(2017, day=1, month=7)
-    if _extract_date(name) < FORMAT_CHANGE_DATE:
-        new_df = pd.read_excel(url)
+    if date < FORMAT_CHANGE_DATE:
+        new_df = pd.read_excel(url, header=None)
     # From 7/2017 format changed to add a title in 1st row
-    # TODO: check format change where 2nd row is empty
     else:
-        new_df = pd.read_excel(url, skiprows=1)
+        new_df = pd.read_excel(url, skiprows=1, header=None)
 
-    #return _clean(new_df)
-    return new_df
+    return _clean(new_df)
 
 # Returns combined monthly price histories
 def read() -> pd.DataFrame:
