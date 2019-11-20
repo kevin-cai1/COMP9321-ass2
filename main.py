@@ -15,7 +15,7 @@ class FuelForm(FlaskForm):
 @app.route('/', methods=['POST', 'GET'] )
 def home():
     form = FuelForm()
-    services = request.form.get('check')
+    services = request.form.getlist('check')
     print(services)
 
     if form.validate_on_submit():
