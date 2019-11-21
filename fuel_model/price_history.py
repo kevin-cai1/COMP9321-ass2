@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from datetime import datetime
 import requests
 
@@ -18,19 +19,35 @@ def _extract_date(name: str) -> datetime:
         raise ValueError('Invalid name: {}'.format(name))
 
 # Sets first row as column labels
-def _set_header(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.rename(columns=df.iloc[0])
-    return df.drop(index=df.index[0])
+def _set_header(df: pd.DataFrame):
+    df.rename(columns=df.iloc[0], inplace=True)
+    df.drop(index=df.index[0], inplace=True)
 
-def _set_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+def _set_dtypes(df: pd.DataFrame):
     df['Price'] = pd.to_numeric(df['Price'], downcast='float')
+    df['PriceUpdatedDate'] = (
+            pd.to_datetime(df['PriceUpdatedDate'], format='%d/%m/%Y %I:%M:%S %p'))
     return df
 
 def _clean(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.dropna(how='all')
-    df = _set_header(df)
-    df = _set_dtypes(df)
-    df = df.apply(lambda col: col.interpolate(method='pad', limit_direction='forward')                  , axis=0)
+    # Drop row all nans e.g. some sheets have whitespace at start of file
+    df.dropna(how='all', inplace=True)
+    _set_header(df)
+
+    # Data from excel sheets sometimes has empty space where there is replication,
+    # but with FuelCode, PriceUpdatedDate, Price intact
+    def interpolate(col: pd.Series) -> pd.Series:
+        if (col.name != 'FuelCode'
+        and col.name != 'PriceUpdatedDate'
+        and col.name != 'Price'):
+            col = col.interpolate(method='pad', limit_direction='forward')
+        return col
+    df = df.apply(interpolate, axis=0)
+    # Clean up any rows that haven't been interpolated
+    df.dropna(how='any', inplace=True)
+
+    _set_dtypes(df)
+
     return df
 
 # Returns data from monthly excel file at url
