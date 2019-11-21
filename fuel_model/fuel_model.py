@@ -7,6 +7,20 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 
 
+# return predicted price for a given date, fuel station and fuel type
+def get_prediction(date, fuel_station, fuel_type):
+    # load the model specified by fuel station and fuel type
+    # filename = {some standardised format with specific params}
+    # loaded_model = pickle.load(open(filename, 'rb'))
+
+    # result = loaded.model.predict(date)
+
+    # print(result)
+    #return result
+    pass
+
+
+
 def load_price(df, split_percentage):
     df = shuffle(df)
 
@@ -36,6 +50,8 @@ def normalize_data(df):
     
 def init_model():
     df = pd.read_excel("fuel_data/service-station-price-history-june-2017.xlsx")
+    # read file
+    
     #df = pd.read_excel("fuel_data_may-september_2017.xlsx")
     
     df = normalize_data(df)
