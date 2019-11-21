@@ -34,11 +34,13 @@ def _set_dtypes(df: pd.DataFrame) -> pd.DataFrame:
 
 # Data from excel sheets sometimes has empty space where there is replication,
 # but with FuelCode, PriceUpdatedDate, Price intact
-def _normalise_cols(col: pd.Series) -> pd.Series:
-    if (col.name != 'FuelCode'
-    and col.name != 'PriceUpdatedDate'
-    and col.name != 'Price'):
-        if col.dtype == str:
+def _normalise_col(col: pd.Series) -> pd.Series:
+    if (col.name == 'Address'
+    or col.name == 'Brand'
+    or col.name == 'Postcode'
+    or col.name == 'ServiceStationName'
+    or col.name == 'Suburb'):
+        if col.name != 'Postcode':
             col = (col.str.strip()
                       .str.lower())
         col = col.interpolate(method='pad', limit_direction='forward')
@@ -52,13 +54,11 @@ def _clean(df: pd.DataFrame) -> pd.DataFrame:
     df.dropna(thresh=3, inplace=True)
     df = _set_header(df)
 
-    df = df.apply(_normalise_cols, axis=0)
+    df = df.apply(_normalise_col, axis=0)
     # Clean up any rows that haven't been interpolated
     df.dropna(how='any', inplace=True)
 
-    df = _set_dtypes(df)
-
-    return df
+    return _set_dtypes(df)
 
 # Returns data from monthly excel file at url
 def _read_month(url: str) -> pd.DataFrame:
