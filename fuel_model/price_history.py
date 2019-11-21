@@ -22,21 +22,28 @@ def _set_header(df: pd.DataFrame) -> pd.DataFrame:
     df = df.rename(columns=df.iloc[0])
     return df.drop(index=df.index[0])
 
+def _set_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+    df['Price'] = pd.to_numeric(df['Price'], downcast='float')
+    return df
+
 def _clean(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(how='all')
     df = _set_header(df)
-    #df = df.interpolate(method='pad')
+    df = _set_dtypes(df)
+    df = df.apply(lambda col: col.interpolate(method='pad', limit_direction='forward')                  , axis=0)
     return df
 
 # Returns data from monthly excel file at url
 def _read_month(url: str, name: str) -> pd.DataFrame:
     date = _extract_date(name)
     FORMAT_CHANGE_DATE = datetime(2017, day=1, month=7)
+    args = {'io': url, 'header': None}
     if date < FORMAT_CHANGE_DATE:
-        new_df = pd.read_excel(url, header=None)
+        new_df = pd.read_excel(**args)
     # From 7/2017 format changed to add a title in 1st row
     else:
-        new_df = pd.read_excel(url, skiprows=1, header=None)
+        args['skiprows'] = 1
+        new_df = pd.read_excel(**args)
 
     return _clean(new_df)
 
