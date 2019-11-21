@@ -32,6 +32,19 @@ def _set_dtypes(df: pd.DataFrame) -> pd.DataFrame:
             pd.to_datetime(df['PriceUpdatedDate'], format='%d/%m/%Y %I:%M:%S %p'))
     return df
 
+# Data from excel sheets sometimes has empty space where there is replication,
+# but with FuelCode, PriceUpdatedDate, Price intact
+def _normalise_cols(col: pd.Series) -> pd.Series:
+    if (col.name != 'FuelCode'
+    and col.name != 'PriceUpdatedDate'
+    and col.name != 'Price'):
+        if col.dtype == str:
+            col = (col.str.strip()
+                      .str.lower())
+        col = col.interpolate(method='pad', limit_direction='forward')
+
+    return col
+
 def _clean(df: pd.DataFrame) -> pd.DataFrame:
     # Some sheets have 3 'valid' NaNs (8 cols total) that
     # must be inferred i.e. FuelCode, PriceUpdatedDate, Price
@@ -39,15 +52,7 @@ def _clean(df: pd.DataFrame) -> pd.DataFrame:
     df.dropna(thresh=3, inplace=True)
     df = _set_header(df)
 
-    # Data from excel sheets sometimes has empty space where there is replication,
-    # but with FuelCode, PriceUpdatedDate, Price intact
-    def interpolate(col: pd.Series) -> pd.Series:
-        if (col.name != 'FuelCode'
-        and col.name != 'PriceUpdatedDate'
-        and col.name != 'Price'):
-            col = col.interpolate(method='pad', limit_direction='forward')
-        return col
-    df = df.apply(interpolate, axis=0)
+    df = df.apply(_normalise_cols, axis=0)
     # Clean up any rows that haven't been interpolated
     df.dropna(how='any', inplace=True)
 
@@ -81,7 +86,7 @@ def read(start: datetime.date, end: datetime.date) -> pd.DataFrame:
     return df
 
 if __name__ == "__main__":
-    df = read(start=datetime.date(2019, 10, 1), end=datetime.date(2019, 10, 1))
+    df = read(start=datetime.date(2016, 9, 1), end=datetime.date(2019, 10, 1))
     print(df.head(5).to_string())
     print(df.tail(5).to_string())
     print('types: {}'.format(df.dtypes))
