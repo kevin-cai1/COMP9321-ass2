@@ -19,15 +19,20 @@ class FuelTypeEnum(enum.Enum):
 
 search_package = api.model('search', {
     'fuel_type' : fields.String(description='Fuel type for the fuel prediction', enum=['x.name for x in FuelTypeEnum']),
-    'prediction_start' : fields.DateTime(description='start date for prediction period'),
-    'prediction_end': fields.DateTime(description='end date for prediction period')
+    'prediction_start' : fields.Date(description='start date for prediction period'),
+    'prediction_end': fields.Date(description='end date for prediction period')
 })
 
 location_model = api.model('location', {
     'fuel_type' : fields.String(description='Fuel type for the fuel prediction', enum=[x.name for x in FuelTypeEnum]),
     'named_location' : fields.String(description='suburb or postcode'),
-    'prediction_start' : fields.DateTime(description='start date for prediction period'),
-    'prediction_end': fields.DateTime(description='end date for prediction period')
+    'prediction_start' : fields.Date(description='start date for prediction period'),
+    'prediction_end': fields.Date(description='end date for prediction period')
+})
+
+prediction_result = api.model('prediction_result', {
+    'prediction_date' : fields.Date(description='Date of the returned prediction')
+    'predicted_price' : fields.Float(description='Predicted price for the client request')
 })
 
 @api.route('/fuel/predictions/<int:station_code>')
