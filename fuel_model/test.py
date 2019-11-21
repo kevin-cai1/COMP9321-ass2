@@ -7,6 +7,8 @@ from sklearn.preprocessing import PolynomialFeatures, scale
 from sklearn.pipeline import make_pipeline
 from sklearn.utils import shuffle
 from sklearn.metrics import mean_squared_error
+from sklearn import model_selection
+import pickle
 import numpy as np
 
 
@@ -54,6 +56,9 @@ if __name__ == "__main__":
     #knn_model.fit(price_x_train, price_y_train)
     poly3_model.fit(price_x_train, price_y_train)
     poly4_model.fit(price_x_train, price_y_train)
+
+    filename = 'model.sav'
+    pickle.dump(linear_model, open(filename, 'wb'))
 
     y_pred = linear_model.predict(price_x_test)
 
