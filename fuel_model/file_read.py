@@ -22,11 +22,11 @@ print(len(suburb_list))
 files = 0
 for station in station_list:
     if isinstance(station, str):
-        print(station)
+        #print(station)
         temp_df = df.query('ServiceStationName == @station')
         fuel_types = temp_df.FuelCode.unique()
         for fuel in fuel_types:
-        #    fuel_df = temp_df.query('FuelCode == @fuel')
+            fuel_df = temp_df.query('FuelCode == @fuel')
         #    df = fuel_df[['PriceUpdatedDate', 'Price']]
 
         #    price_x = df.drop('Price', axis=1).values
@@ -39,7 +39,7 @@ for station in station_list:
 
             filename = station + "_" + str(fuel) + ".sav"
             files+= 1
-            print(filename)
+            #print(filename)
             #filename = 'model.sav'  # change filename to reflect current 
             #pickle.dump(linear_model, open(filename, 'wb'))
 print(files)

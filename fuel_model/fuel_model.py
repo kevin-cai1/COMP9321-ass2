@@ -5,6 +5,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.utils import shuffle
 from sklearn.metrics import mean_squared_error
 import numpy as np
+from datetime import datetime
 
 
 # return predicted price for a given date, fuel station and fuel type
@@ -39,43 +40,48 @@ def load_price(df, split_percentage):
 
     
 
-def normalize_data(df):
-    df = df.query('FuelCode == "E10"')
-    df = df.query('ServiceStationName =="7-Eleven Artarmon"')
+def normalize_data(df): 
+    df2 = df.query('1000 <= Postcode <= 2249')
+    df3 = df.query('2760 <= Postcode <= 2770')
 
-    df1 = df[['PriceUpdatedDate', 'Price']]
+    metro_df = df2.append(df3, ignore_index=True)  # extracts just listings within the sydney metro area
 
-    df1 = df1.sort_values(by=['PriceUpdatedDate'])    
-    return df1  
+    df1 = metro_df[['ServiceStationName', 'FuelCode', 'PriceUpdatedDate', 'Price']]
+
+    df1['PriceUpdatedDate'] = df1['PriceUpdatedDate'].apply(extract_date)   # format date to remove time
+        
+    return df1 
     
+def extract_date(x):
+    x = str(x).split(' ')
+    x = x[0]
+    return x
+
 def init_model():
-    df = pd.read_excel("fuel_data/service-station-price-history-june-2017.xlsx")
-    # read file
+    df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)   # load dataset
+
+    df = normalize_data(df) # format data for necessary rows and columns
+
+    fuel_list = ["E10", "U91", "P95", "P98"]  # list of supported fuel types
+
+    for fuel in fuel_list:
+        fuel_df = df.query('FuelCode == @fuel')
+
+        print(fuel_df)
+        fuel_model = load_model(df)
+        filename = "fuel_model_" + fuel + ".sav"
+        print(filename)
     
-    #df = pd.read_excel("fuel_data_may-september_2017.xlsx")
-    
-    df = normalize_data(df)
+        pickle.dump(fuel_model, open(filename, 'wb'))    # save model to memory
 
-    price_x_train, price_y_train, price_x_test, price_y_test = load_price(df, split_percentage=0.7)
-    
-    linear_model = LinearRegression()
-    poly3_model = make_pipeline(PolynomialFeatures(3), Ridge())
-    poly4_model = make_pipeline(PolynomialFeatures(4), Ridge())
+def load_model(df):
+    model_x = df[['ServiceStationName', 'PriceUpdatedDate']].values     # features that dictate prediction
+    model_y = df['Price'].values                                        # feature to predict
+   
+    model = LinearRegression()
+    model.fit(model_x, model_y)
 
-    linear_model.fit(price_x_train, price_y_train)
-    poly3_model.fit(price_x_train, price_y_train)
-    poly4_model.fit(price_x_train, price_y_train)
-
-    
-    linearConfidence = linear_model.score(price_x_test, price_y_test)
-    poly3Confidence = poly3_model.score(price_x_test, price_y_test)
-    poly4Confidence = poly4_model.score(price_x_test, price_y_test)
-
-
-    print("Linear confidence is: ", linearConfidence)
-    print("Polynomial 3 confidence is: ", poly3Confidence)
-    print("Polynomial 4 confidence is: ", poly4Confidence)
-
+    return model
 
 if __name__ == "__main__":
     init_model()
