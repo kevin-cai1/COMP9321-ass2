@@ -61,6 +61,10 @@ if __name__ == "__main__":
     pickle.dump(linear_model, open(filename, 'wb'))
 
     y_pred = linear_model.predict(price_x_test)
+    print(price_x_test)
+    print(type(price_x_test))
+    print(type(price_y_test))
+    print(price_y_test)
 
     #y_pred2 = knn_model.predict(price_x_test)
 

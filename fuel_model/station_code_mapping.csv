@@ -1,0 +1,664 @@
+ServiceStationCode,ServiceStationName
+0,Metro Fuel Marrickville
+1,Speedway Smithfield
+2,Speedway Fairfield
+3,Speedway Westmead
+4,Speedway Horsley Drive
+5,BP North Rocks
+6,BP CLOVELLY
+7,Metro Lansdowne
+8,Metro Fuel Ermington
+9,Metro Fuel Greystanes
+10,Metro Fuel Old Toongabbie
+11,BP Chipping Norton
+12,Budget Oatley
+13,Enhance Homebush
+14,Speedway Kent Road
+15,Budget North Rocks
+16,Budget Kogarah
+17,Speedway Liverpool
+18,Caltex Villawood
+19,Budget Annangrove
+20,Budget Carlton
+21,Caltex Woolworths Prestons
+22,Caltex Woolworths Kogarah
+23,BP Willoughby
+24,Independent Lalor Park
+25,Metro Georges Hall
+26,Caltex Woolworths Seven Hills North
+27,Caltex Woolworths Chester Hill
+28,Metro Auburn
+29,Caltex starmart Newtown
+30,Caltex Star Mart Coogee South
+31,Caltex Kemps Creek
+32,Caltex Coogee
+33,Caltex Woolworths Rosebery
+34,Caltex Star Mart Tempe
+35,Caltex Greenacre
+36,7-Eleven Sans Souci
+37,7-Eleven South Hurstville
+38,7-Eleven Toongabbie
+39,Caltex Ermington
+40,Caltex old Guildford
+41,Caltex Star Mart Bonnyrigg
+42,7-Eleven Guildford
+43,Speedway Kings Langley
+44,Westside Petroleum Lidcombe
+45,Metro Petroleum Padstow
+46,Caltex Woolworths West Ryde
+47,Budget Brighton
+48,Caltex Starmart Lakemba
+49,Metro Petroleum Belmore
+50,Metro Fuel Canterbury
+51,7-Eleven Carlton
+52,7-Eleven Seven Hills
+53,7-Eleven Baulkham Hills
+54,7-Eleven Kogarah
+55,7-Eleven Guildford West
+56,Caltex Woolworths Chipping Norton
+57,7-Eleven Mount Pritchard
+58,Speedway Rockdale
+59,Metro Fuel Fairfield
+60,Caltex Woolworths Bonnyrigg
+61,Caltex Woolworths Seven Hills
+62,BP CONCORD
+63,Independent Liverpool
+64,Caltex Woolworths Blakehurst
+65,BP Bondi
+66,Caltex Woolworths Rockdale
+67,United Bass Hill
+68,Speedway South Granville
+69,BP Redfern
+70,SPEEDWAY FAIRFIELD WEST
+71,Speedway Auburn
+72,BP Cabramatta West
+73,APEX PETROLEUM (WEST RYDE)
+74,BP Greystanes
+75,Budget Blacktown
+76,Speedway Granville
+77,BP Blacktown
+78,APEX PETROLEUM VILLAWOOD
+79,Budget Granville
+80,Metro Fuel Regents Park
+81,BP Sans Souci
+82,Metro St Ives Chase
+83,Caltex Woolworths Surry Hills
+84,Independent Roselands
+85,7-Eleven Rockdale
+86,
+87,7-Eleven Prairewood
+88,7-Eleven Blacktown East
+89,7-Eleven Arncliffe
+90,7-Eleven Kirrawee
+91,Budget Petroleum Smithfield
+92,BP Sydenham
+93,7-Eleven West Ryde
+94,BP Regent Street
+95,Budget Kingsgrove
+96,BP Bonnyrigg
+97,BP Silverwater
+98,BP Crossroads
+99,BP Rose Bay Central
+100,Speedway Woodpark
+101,BP Seven Hills
+102,Metro Punchbowl
+103,BP West Ryde
+104,Budget Dulwich Hill
+105,Caltex Woolworths Roselands
+106,Caltex Woolworths Granville
+107,Caltex Woolworths Marrickville
+108,Caltex Seven Hills
+109,Caltex Star Mart Bondi
+110,Caltex Kogarah
+111,Budget Freshwater
+112,BP Lansvale
+113,Caltex Mount Pritchard
+114,Caltex Merrylands
+115,Powerfuel
+116,BP Berowra
+117,Caltex Leppington
+118,Caltex Woolworths Blacktown
+119,7-Eleven Paddington
+120,Caltex Starmart Casula
+121,Caltex Star Mart Seven Hills
+122,Ampol Hoxton Park
+123,Westside Petroleum Granville
+124,Caltex Woolworths Lansvale
+125,Speedway Green Valley
+126,Budget Petrol Bundeena
+127,7-Eleven Ryde
+128,7-Eleven Belmore
+129,BP Silverwater South
+130,BP Mays Hill
+131,BP Kemps Creek
+132,Tanwar Petroleum
+133,Speedway Blacktown
+134,Metro Fuel Miranda
+135,BP Padstow
+136,Fairfield Fuel
+137,Caltex Woolworths Merrylands
+138,Caltex Woolworths Silverwater
+139,Caltex Woolworths Newington
+140,Coles Express Bass Hill
+141,Speedway Villawood
+142,7-Eleven Lansvale South
+143,Budget Chester Hill
+144,Coles Express Edmondson Park
+145,Liberty Bonnyrigg
+146,Metro Yagoona
+147,Coles Express Yagoona
+148,7-Eleven Georges Hall
+149,BP Riverwood
+150,BP Fairfield
+151,BP Putney
+152,CALTEX IGA EXPRESS
+153,7-Eleven Lakemba
+154,Speedway Croydon
+155,Speedway Cammeray
+156,7-Eleven Yagoona
+157,7-Eleven Bankstown
+158,Speedway Austral
+159,Budget Petrol Chippendale
+160,7-Eleven Emerald Hills
+161,Metro Wakely
+162,Metro Revesby
+163,Caltex Ryde Self Serve
+164,Caltex Woolworths Burwood
+165,United Petroleum Kemps Creek
+166,Metro Fuel Homebush
+167,Metro Petroleum Liverpool
+168,Metro Pertoleum Lurnea
+169,Metro Condell Park West
+170,Caltex Woolworths Marsfield
+171,Caltex Woolworths Chatswood East
+172,BP South Hurstville
+173,Budget Petrol
+174,Independent Lakemba
+175,Metro Randwick
+176,BP Randwick
+177,Caltex Woolworths Bass Hill
+178,BP Condell Park
+179,Coles Express Taren Point
+180,Coles Express Brighton-Le-Sands
+181,Coles Express Drummoyne
+182,Coles Express Lidcombe
+183,Coles Express Maroubra
+184,Coles Express North Ryde
+185,Coles Express Lane Cove
+186,Coles Express Randwick
+187,Coles Express Leppington
+188,Coles Express Green Valley
+189,Coles Express Forestville
+190,Coles Express Bondi Junction
+191,Coles Express Guildford
+192,Coles Express Wetherill Park
+193,Coles Express Carlingford
+194,Coles Express Wattle Grove
+195,Coles Express Canley Vale
+196,Coles Express Five Dock
+197,Coles Express Marsfield
+198,Coles Express Greystanes
+199,Coles Express Padstow
+200,Coles Express Ryde
+201,Coles Express Oyster Bay
+202,Coles Express South Hurstville
+203,Coles Express Willoughby
+204,Coles Express Baulkham Hills
+205,Coles Express Smithfield
+206,Coles Express Northmead
+207,Coles Express Pagewood
+208,Coles Express Blacktown
+209,Coles Express Gymea
+210,Coles Express Kingsford
+211,Coles Express West Ryde
+212,Coles Express Alexandria
+213,Coles Express Chatswood
+214,Coles Express Bexley
+215,Coles Express Fairfield
+216,Coles Express Ramsgate
+217,7-Eleven North Ryde
+218,7-Eleven Revesby South
+219,7-Eleven Epping
+220,7-Eleven Fairfield West
+221,Coles Express Carlton
+222,Caltex Woolworths Moorebank
+223,7-Eleven Revesby
+224,Coles Express Waterloo
+225,BP North Manly
+226,Caltex Woolworths Woolooware
+227,Caltex Woolworths Marayong
+228,Caltex Woolworths Glenrose
+229,Caltex Woolworths Randwick
+230,Caltex Cabramatta
+231,Caltex Starmart Lansvale
+232,Caltex Beacon Hill
+233,Caltex Gladesville
+234,Caltex Star Mart Wetherill Park
+235,Caltex Star Mart Chatswood
+236,CALTEX MOOREBANK
+237,Caltex Wentworthville
+238,Caltex Woolworths Miranda
+239,BP Horsley Park
+240,Caltex Kirrawee
+241,7-Eleven Blacktown
+242,Metro Fuel Killarney Heights
+243,Metro Petroleum Forestville
+244,Metro Pendle Hill
+245,7-Eleven Carlingford
+246,Caltex Star Mart Drummoyne
+247,Caltex Chipping Norton
+248,Caltex Starmart Homebush
+249,Caltex Taren Point
+250,Caltex Star Mart Canley Heights
+251,Caltex Padstow
+252,Caltex North Ryde
+253,Caltex Sylvania Heights
+254,Caltex Pendle Hill
+255,Caltex Woolworths Fairfield Heights
+256,7-Eleven Matraville
+257,7-Eleven Edmondson Park
+258,7-Eleven Five Dock
+259,7-Eleven Sutherland
+260,7-Eleven Drummoyne
+261,7-Eleven Maroubra
+262,7-Eleven Caringbah
+263,7-Eleven Gymea
+264,7-Eleven Arndell Park
+265,7-Eleven Lane Cove
+266,7-Eleven Artarmon
+267,7-Eleven Fairfield
+268,Speedway Bass Hill
+269,7-Eleven Kensington
+270,7-Eleven Casula
+271,7-Eleven Rozelle
+272,7-Eleven Castle Hill
+273,7-Eleven Roseville
+274,7-Eleven Moorebank
+275,7-Eleven Northmead
+276,7-Eleven Bexley
+277,Caltex Woolworths Brookvale
+278,BP Yagoona
+279,Budget Moorebank
+280,Coles Express Kingsgrove
+281,Coles Express Pennant Hills
+282,Coles Express Hunters Hill
+283,Caltex Woolworths Prospect
+284,SHELL LANSVALE WEST
+285,Caltex Starmart Brookvale
+286,Caltex Wow Rozelle
+287,Caltex Lane Cove West
+288,Caltex Belrose
+289,CALTEX STAR SHOP CARLINGFORD COURT
+290,Caltex Crows Nest
+291,Caltex Kensington
+292,Caltex Longueville
+293,Caltex Northmead
+294,Caltex Woolworths Carlingford
+295,Caltex Kingsford
+296,United Petroleum Yagoona
+297,BP West Pennant Hills
+298,7-Eleven Edensor Park
+299,United Petroleum Dee Why
+300,Coles Express Stanmore
+301,Budget Bexley
+302,BP Express Northwood
+303,Coles Express Woolloomooloo
+304,Coles Express Berowra
+305,Coles Express Hoxton Park
+306,Coles Express Cabramatta
+307,Coles Express Casula
+308,Coles Express Hurstville
+309,Coles Express Cremorne
+310,Coles Express Parramatta
+311,Caltex Woolworths Carnes Hill
+312,Budget Campsie
+313,Coles Express Hornsby
+314,Coles Express Narrabeen
+315,Coles Express Greenacre
+316,Coles Express Liverpool
+317,Coles Express Strathfield
+318,Coles Express Annandale
+319,Coles Express Rouse Hill
+320,Coles Express Heathcote
+321,Coles Express Brookvale
+322,Coles Express Dundas
+323,Coles Express Thornleigh
+324,Coles Express Ultimo
+325,7-Eleven Pendle Hill
+326,7-Eleven Kings Park
+327,7-Eleven Woolooware
+328,7-Eleven Kellyville
+329,7-Eleven North Rocks
+330,Coles Express Avalon Beach
+331,7-Eleven Dee Why
+332,7-Eleven Strathfield South
+333,7-Eleven Merrylands
+334,7-Eleven West Pennant Hills
+335,7-Eleven Greenacre
+336,Coles Express Neutral Bay
+337,Coles Express Dural
+338,Coles Express Wahroonga
+339,Coles Express Cammeray
+340,BP Carss Park
+341,Independent Glenfield
+342,7-Eleven Parramatta
+343,Coles Express Pymble
+344,Coles Express St Ives
+345,Coles Express Strathfield South
+346,Metro Petroleum Blacktown
+347,West Yagoona BP
+348,METRO SUNNYHOLT RD BLACKTOWN
+349,Caltex Woolworths Kellyville
+350,Caltex Woolworths Strathfield
+351,Caltex Woolworths Chullora
+352,7-Eleven Mosman
+353,7-Eleven Berowra
+354,Payless Fuel Sydenham
+355,BP Allambie Heights
+356,United Petroleum Waterloo
+357,Speedway Miranda
+358,BP Enfield
+359,BP Mascot
+360,Metro Fuel Blacktown
+361,Metro Belmore
+362,United Petroleum Yagoona South
+363,BP Gymea
+364,Westside Freshwater
+365,Ultra Manly
+366,Metro Toongabbie
+367,Caltex Woolworths Bankstown
+368,Caltex Woolworths Menai
+369,Metro Petroleum Bexley North
+370,Caltex Woolworths Turramurra
+371,Metro Fuel Kogarah
+372,Budget Auburn
+373,Metro Fairfield
+374,Metro Fuel Condell Park
+375,BP Kirrawee
+376,BP Bexley
+377,Metro Bankstown
+378,Speedway West Ryde
+379,BUDGET PETROL ASHFIELD
+380,Metro Leichhardt
+381,Caltex North Bondi
+382,Caltex Rosebay
+383,Caltex Woolworths Woollahra
+384,Caltex Moorebank
+385,Caltex Star Mart Dee Why
+386,Caltex Alexandria
+387,Caltex Starmart Punchbowl
+388,Caltex Mascot
+389,Caltex Manly Vale
+390,Caltex Strathfield South
+391,The Foodary Croydon
+392,Costco Casula (Members only)
+393,Caltex Menai
+394,Caltex Kellyville
+395,Caltex Star Mart Cherrybrook
+396,Caltex Lilli Pilli
+397,Caltex Woolooware
+398,Caltex Woolworths Greenacre
+399,AP Punchbowl
+400,Coles Express Merrylands
+401,Speedway Arncliffe
+402,shell cromer
+403,BP Warwick Farm
+404,Budget Petrol Matraville
+405,Caltex Woolworths North Narrabeen
+406,Caltex Woolworths Newport
+407,Caltex Woolworths Peakhurst
+408,BP Loftus
+409,7-Eleven Liverpool
+410,7-Eleven Narrabeen
+411,7-Eleven Menai
+412,7-Eleven Croydon Park
+413,7-Eleven Riverwood
+414,7-Eleven Ashfield
+415,7-Eleven Penshurst
+416,7-Eleven Newport
+417,7-Eleven Mona Vale
+418,BP FOX HILLS
+419,Caltex Woolworths North Liverpool
+420,BP Roseville
+421,BP Denistone East
+422,Independent West Pymble
+423,United Petroleum Dee Why Pittwater
+424,Caltex Narwee
+425,Caltex Star Mart Penshurst
+426,Caltex Woolworths
+427,Caltex Kingsgrove
+428,Caltex Woolworths Revesby
+429,Independent Canley Heights
+430,Budget Petrol Eastlakes
+431,BP Artarmon
+432,BP Forestville
+433,Speedway Bankstown
+434,BP Balgowlah
+435,BP Naremburn
+436,BP Carlingford
+437,Caltex Neutral Bay
+438,United Prairiewood
+439,BP Thornleigh
+440,Caltex Star Mart Concord West
+441,BP Summer Hill
+442,BP Pymble
+443,METRO PETROLEUM HURLSTONE PARK
+444,BP Cronulla
+445,BP Canterbury
+446,BP Potts Hill T/S
+447,BP Milperra
+448,Caltex Star Mart Narrabeen
+449,BP Revesby
+450,Shell Liverpool
+451,BP Ashfield
+452,BP Bankstown Airport
+453,BP Wiley Park
+454,BP Rozelle
+455,BP Kingsford
+456,BP Mortdale
+457,BP South Moorebank
+458,Independent Girraween
+459,Caltex Hornsby Heights
+460,BP Casula
+461,7-Eleven Haberfield
+462,7-Eleven Bonnyrigg
+463,7-Eleven Petersham
+464,7-Eleven St Ives
+465,7-Eleven Wahroonga
+466,7-Eleven Hurlstone Park
+467,7-Eleven Lindfield
+468,7-Eleven Turramurra
+469,7-Eleven Killara
+470,Metro Castle Cove
+471,Caltex Woolworths Leichardt
+472,BP Dundas
+473,Caltex St Ives
+474,BP Kingsgrove
+475,7-Eleven Camperdown
+476,Caltex St Ives North
+477,BOBBIN HEAD PETROL STATION
+478,Independent West Hoxton
+479,BP Guildford
+480,Metro Fuel
+481,Metro Petroleum Earlwood
+482,METRO CROYDON PARK
+483,Metro Fuel Jannali
+484,Metro Tempe
+485,Enhance Granville
+486,BP Matraville
+487,Metro Fuel North Avalon
+488,Metro Fuel Greenacre
+489,Metro revesby west
+490,BP Lugarno
+491,Metro Petroleum Narwee
+492,BP Turramurra
+493,Metro Marrickville
+494,Westside Greenacre
+495,BP Botany
+496,Metro Bonnyrigg
+497,Metro Peakhurst
+498,Metro Petroleum South Hurstville
+499,Metro Lane Cove
+500,United Terrey HILLS
+501,Caltex Woolworths Dural
+502,7-Eleven Enmore
+503,Caltex Woolworths Hoxton Park
+504,7-Eleven Green Valley
+505,Caltex Heathcote
+506,Caltex Woolworths Waitara
+507,Caltex WOW Heathcote
+508,Caltex Star Mart Dural
+509,Caltex Berowra
+510,7-Eleven Burwood
+511,7-Eleven Lurnea
+512,Caltex Mount Colah
+513,Caltex Kenthurst
+514,Metro Peakhurst East
+515,Westside Kenthurst
+516,BP Kellyville
+517,BP St Peters (NSW)
+518,BP Rosehill
+519,BP Runway
+520,BP Asquith
+521,Caltex Starmart Concord
+522,Metro Petroleum Chester Hill
+523,Speedway Revesby
+524,BP Hoxton Park
+525,Metro Fuel Alexandria
+526,7 Express Carlton
+527,BP Bankstown
+528,Caltex Star Mart Rydalmere
+529,Caltex Woolworths Baulkham Hills 22464
+530,Metro Petroleum Lakemba
+531,BP Manly
+532,Caltex Miller
+533,Metro Fuel Wiley Park
+534,BP Bexley North
+535,7-Eleven Granville
+536,7-Eleven Granville East
+537,United Petroleum Rydalmere
+538,BUDGET PETROL BEXLEY ROAD CAMPSIE
+539,Caltex Granville
+540,Caltex Starmart Manly
+541,BP Auburn
+542,Budget Petrol Petersham
+543,BP Leppington
+544,Independent Marrickville
+545,BP Thornton
+546,Speedway Mt Pritchard
+547,Speedway Meadows
+548,Metro Milperra
+549,BP Greenfield Park
+550,BP Merrylands West
+551,BP Hoxton Park Airfield
+552,United Sutherland
+553,BP Mosman (0926)
+554,BP Mona Vale
+555,BP Hornsby
+556,BP Dural
+557,BP Caringbah
+558,BP Peninsula
+559,BP Engadine
+560,Metro Fuel Hornsby
+561,BP Rydalmere
+562,BP Camperdown
+563,Independent Ramsgate
+564,BP Prestons
+565,Budget Erskineville
+566,BP Liverpool
+567,BP Rockdale
+568,BP Croydon Park
+569,BP Normanhurst
+570,Independent Turramurra
+571,BP Baulkham Hills
+572,BP Rose Bay
+573,Calvi Petrol Station
+574,Metro Bexley
+575,Metro Willoughby
+576,Metro Sefton
+577,BP Haberfield
+578,BP Belfield
+579,Independent Rosebery
+580,Independent Wiley Park
+581,Metro Fuel Cremorne
+582,Enhance Merrylands
+583,Speedway Regents Park
+584,Speedway Parramatta
+585,BUDGET PETROL MASCOT
+586,Caltex Horsley Park
+587,United Beacon Hill
+588,Xpress fuels
+589,BP Epping
+590,United Rozelle
+591,Budget Earlwood
+592,Metro Fuel Haberfield
+593,Westside Blakehurst
+594,BP Penshurst
+595,Sparkles Petroleum Clovelly
+596,Speedway Haberfield
+597,BP Smithfield
+598,Speedway Caringbah
+599,BP Lane Cove
+600,Speedway Birrong
+601,Budget Telopea
+602,Budget West Ryde
+603,Prime Earlwood
+604,Speedway Casula
+605,Speedway Northwood
+606,APW
+607,BP Edgecliff
+608,Gas to connect
+609,Metro Fuel Croydon
+610,Mobil 1 Carlingford Car Care
+611,Puma Wetherill Park
+612,BKB
+613,BP Mosman (9542)
+614,Caltex Five Dock
+615,Total Fuel Cabramatta
+616,Speedway North St Marys
+617,Caltex Woolworths Berkshire Park
+618,Caltex St Marys
+619,Coles Express Berkshire Park
+620,BP Maraylya
+621,Caltex Woolworths Plumpton
+622,Westside Doonside
+623,7-Eleven Hassall Grove
+624,BP St Marys
+625,BP St Marys (Forrester Road)
+626,7-Eleven Plumpton
+627,7-Eleven RIVERSTONE
+628,Caltex Woolworths Vineyard
+629,BP Shalvey
+630,Coles Express Colyton
+631,Coles Express Eastern Creek
+632,Coles Express Doonside
+633,7-Eleven St Marys
+634,7-Eleven Colyton
+635,7-Eleven Minchinbury
+636,7-Eleven Eastern Creek
+637,7-Eleven Rooty Hill
+638,Coles Express Marsden Park
+639,Coles Express Parklea
+640,7-Eleven Quakers Hill
+641,7-Eleven Marsden Park
+642,BP Quakers Hill
+643,Caltex Woolworths Mount Druitt
+644,FREEDOM FUEL VINEYARD
+645,Independent Riverstone
+646,Costco Marsden Park (Members only)
+647,Caltex Parklea
+648,Caltex Eastern Creek
+649,Caltex Marsden Park
+650,7-Eleven Mount Druitt
+651,Puma Energy Marsden Park
+652,7-Eleven Emerton
+653,Caltex Mount Druitt
+654,BP Eastern Creek T/S
+655,BP Glendenning
+656,BP Woodcroft
+657,BP Riverstone
+658,Metro Fuel Doonside
+659,BP Marsden Park
+660,Metro Petroleum St Marys
+661,United Petroleum Lethbridge Park
+662,BP Minchinbury
