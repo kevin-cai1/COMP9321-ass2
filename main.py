@@ -23,7 +23,7 @@ def track_event(category, action, label=None, value=0):
         'tid': GA_TRACKING_ID,  # Tracking ID / Property ID.
         # Anonymous Client Identifier. Ideally, this should be a UUID that
         # is associated with particular user, device, or browser instance.
-        'cid': '555',
+        'cid': randint(),
         't': 'event',  # Event hit type.
         'ec': category,  # Event category.
         'ea': action,  # Event action.
@@ -47,8 +47,10 @@ class FuelForm(FlaskForm):
 def home():
     form = FuelForm()
 
+    track_event(category='Home', action='View')
+
     if form.validate_on_submit():
-        track_event(category='event', action='Test Submit')  
+        track_event(category='Predict', action='Submit')
         return "Form has been submitted with fuel type: {}, postcode: {}, prediction_date: {}".format(form.fuel_type.data, form.postcode.data, form.prediction_date.data)
 
     return render_template("home.html", form=form)
