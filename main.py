@@ -32,7 +32,7 @@ def home():
     form = FuelForm()
 
     if form.validate_on_submit():
-        return "Form has been submitted with fuel type: {}, postcode: {}, prediction_date: {}".format(form.fuel_type.data, form.postcode.data, form.prediction_date.data)
+        return "Form has been submitted with fuel type: {}, postcode: {}, prediction_date: {}, services: {}".format(form.fuel_type.data, form.postcode.data, form.prediction_date.data, form.services.data)
 
     return render_template("home.html", form=form)
 
