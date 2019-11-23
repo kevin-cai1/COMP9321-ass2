@@ -8,6 +8,10 @@ import numpy as np
 import datetime
 import pickle
 
+import sys
+import os
+sys.path.append(os.path.abspath('../fuel_model'))
+import price_history
 
 
 # return predicted price for a given date, fuel station and fuel type
@@ -45,6 +49,7 @@ def load_price(df, split_percentage):
     
 # formats dataframe and removes unnecessary columns
 def normalize_data(df): 
+    df['Postcode'] = df['Postcode'].apply(pd.to_numeric)
     df2 = df.query('1000 <= Postcode <= 2249')
     df3 = df.query('2760 <= Postcode <= 2770')
 
@@ -56,27 +61,17 @@ def normalize_data(df):
 
     df1 = df1.dropna()  # remove nan rows
         
-    df1['PriceUpdatedDate'] = df1['PriceUpdatedDate'].apply(extract_date)   # format date to be ordinal date
+    df1['PriceUpdatedDate'] = df1['PriceUpdatedDate'].apply(lambda x: x.toordinal())
+    #df1['PriceUpdatedDate'] = df1['PriceUpdatedDate'].apply(extract_date)   # format date to be ordinal date
 
     new_df = pd.merge(map_df, df1, how='inner', on='ServiceStationName')    # add service station code for station name
     return_df = new_df[['ServiceStationCode', 'FuelCode', 'PriceUpdatedDate', 'Price']]
 
     return return_df 
-    
-# converts date from string into ordinal date
-def extract_date(x):
-    x = str(x).split(' ')   # gets just the date
-    x = x[0]
-    date = x.split('/')
-    date_date = datetime.date(int(date[2]), int(date[1]), int(date[0])) #date(year, month, day)
-    return date_date.toordinal()
 
 # instantiates and saves the training models into fuel_model/models
 def init_model():
-    df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)   # load dataset
-
-    df = normalize_data(df) # format data for necessary rows and columns
-
+    df = read_data()
     fuel_list = ["E10", "U91", "P95", "P98"]  # list of supported fuel types
 
     for fuel in fuel_list:
@@ -115,10 +110,39 @@ def test_model(df):
     print(y_pred)
     linearConfidence = linear_model.score(price_x_test, price_y_test)
 
+# generates a station to code mapping based on the stations in the given df
+# saves mapping to station_code_mapping.csv
+def generate_station_mapping(df):
+    station_list = df.ServiceStationName.unique()
+
+    data = []
+    index = 0
+    for station in station_list:
+        station_row = {'ServiceStationCode': index, 'ServiceStationName': station}
+        index += 1
+        data.append(station_row)
+    
+    station_df = pd.DataFrame(data)
+
+    station_df.to_csv('station_code_mapping.csv',index=False)
+
+def read_data():
+    today = datetime.date.today()
+    end_date = today - datetime.timedelta(days=today.day)   # offset to account for upload of data
+    period = datetime.timedelta(days=end_date.day)
+    start_date = end_date - period
+    print(end_date, start_date)
+
+    df = price_history.read(start=start_date, end=end_date) # read data from dataset
+
+    #df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)   # load dataset
+
+    df = normalize_data(df) # format data for necessary rows and columns
+    return df
 
 if __name__ == "__main__":
-    #init_model()
-
+    init_model()
+    
     #get_prediction(date, fuel_station_code, fuel_type)
     date = datetime.date(2019, 10, 20)  
     get_prediction(date, 0, "E10")  # test prediction
