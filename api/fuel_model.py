@@ -23,7 +23,7 @@ def get_prediction(date, fuel_station_code, fuel_type):
     data = np.array([[fuel_station_code, date.toordinal()]])
     result = loaded_model.predict(data)
 
-    print(result)
+    #print(result)
     return result
 
 
