@@ -54,6 +54,7 @@ class FuelPredictionsForStation(Resource):
     @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
     @api.response(404, "Station/Fuel_Type not found")
+    
     def post(self, station_code):
         search = request.json
         
@@ -74,11 +75,15 @@ class FuelPredictionsForStation(Resource):
             prices[single_date.strftime("%Y-%m-%d")] = fm.get_prediction(single_date, station_code, fuel_type)
         
         ret = []
+        
+        df.query('ServiceStationCode == {}'.format(station_code))
+        [name, address] = df[['ServiceStationName', 'Address']].iloc[0]
                   
         tmp = {
             'Status' : 'OK',
             'Station_Code' : station_code,
-            'Station_Address' : 'address',
+            'Station_Name' : name,
+            'Station_Address' : address,
             'Fuel_Type' : fuel_type
             }
         
@@ -128,9 +133,9 @@ if __name__ == "__main__":
     
     map_df = pd.read_csv("station_code_mapping.csv")   
     df = pd.merge(map_df, df, how='inner', on='ServiceStationName')
-
-    # print(df.head(5).to_string())
-
+    
+    #print(df.head(5).to_string())
+    
     app.run(debug=True, port=8002)
     
     
