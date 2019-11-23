@@ -18,6 +18,8 @@ class FuelTypeEnum(enum.Enum):
     U91 = 'U91'
     P98 = 'P98'
     P95 = 'P95'
+    
+fuel_list = ["E10", "U91", "P95", "P98"]
 
 search_package = api.model('search', {
     'fuel_type' : fields.String(description='Fuel type for the fuel prediction'),# enum=['x.name for x in FuelTypeEnum']),
@@ -44,14 +46,18 @@ class FuelPredictionsForStation(Resource):
     @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station")
     @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
-    @api.response(404, "Station was not found")
+    @api.response(404, "Station/Fuel type not found")
     def post(self, station_code):
         search = request.json
         
         if station_code not in df.ServiceStationCode:
-            api.abort(404, "Station {} doesn't exist.".format(station_code))
+            api.abort(404, "Station {} doesn't exist".format(station_code))
+          
+        fuel_type = search['fuel_type'].upper()
+        if fuel_type not in fuel_list:
+            api.abort(404, "Fuel Type {} doesn't exist".format(fuel_type))
             
-        fuel_type = search['fuel_type']
+        
         pred_start = date.fromisoformat(search['prediction_start'])
         pred_end = search['prediction_end']
         
