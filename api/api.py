@@ -13,6 +13,8 @@ from numpy.core.arrayprint import DatetimeFormat
 from Lib.datetime import timedelta, datetime
 from flask.json import jsonify
 from _ast import If
+from pandas.tests.extension.test_external_block import df
+from numpy.core.defchararray import lower
 
 app = Flask(__name__)
 api = Api(app, default="Fuel Prediction", title="Fuel Prediction API", description="API to return predicted fuel prices")
@@ -119,8 +121,6 @@ class TimeForPriceAtStation(Resource):
         price_req = search['price_req']
         
         for single_date in daterange(start_date, end_date):
-            print(single_date.strftime("%Y-%m-%d"))
-            print(int(fm.get_prediction(single_date, station_code, fuel_type)))
             if int(fm.get_prediction(single_date, station_code, fuel_type)) <= price_req:
                 date_of_price = single_date.strftime("%Y-%m-%d")
                 break
@@ -157,33 +157,48 @@ class FuelPredictionsForLocation(Resource):
     def post(self):
         location = request.json
         
-        loc = location['named_location']
+        req_loc = location['named_location']
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
             
-        if loc in df.Suburb.unique():
+        if req_loc in df.Suburb.unique():
             print('its a suburb!')
-        elif loc not in df.Postcode.unique():
+            df1 = df.loc[df['Suburb'] == req_loc]
+        elif req_loc not in df.Postcode.unique():
             print('its a postcode!')
+            df1 = df.query('Postcode == {}'.format(req_loc))
         else:
-            return {"message": "Location {} not found".format(loc)}, 404
+            return {"message": "Location {} not found".format(req_loc)}, 404
+        
+        stations = df1.ServiceStationCode.unique()
+        
+        start_date = date.fromisoformat(location['prediction_start'])
+        end_date = date.fromisoformat(location['prediction_end'])
+        
+        prices= {}
+        
+        for single_date in daterange(start_date, end_date):
+            date_string = single_date.strftime("%Y-%m-%d")
+            prices[date_string] = []
+            for i in stations:
+                prices[date_string].append(int(fm.get_prediction(single_date, i, fuel_type)))
             
         ret = []
         
         tmp = {
             'Status' : 'OK',
-            'Requested_Loc' : loc,
-            'Station_Name' : 'name',
-            'Station_Address' : 'address',
+            'Requested_Loc' : req_loc,
             'Fuel_Type' : fuel_type,
             }
+        
+        for x in prices:
+            tmp[x] = np.mean(prices[x])
         
         ret.append(tmp)
         
         return ret
-#2204
-#Marrickville
+
 
 @api.route('/fuel/predictions/average')
 class AverageFuelPredictionForSuburb(Resource):
@@ -209,9 +224,9 @@ if __name__ == "__main__":
     df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(fm.extract_date)
     
     map_df = pd.read_csv("station_code_mapping.csv")   
-    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')
+    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
     
-    #print(df.head(5).to_string())
+    #print(df1.head(5).to_string())
     
     app.run(debug=True, port=8002)
     
