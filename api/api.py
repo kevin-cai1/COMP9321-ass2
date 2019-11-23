@@ -8,7 +8,7 @@ import fuel_model as fm
     
 import json
 import enum
-import datetime
+from datetime import date
 
 app = Flask(__name__)
 api = Api(app, default="Fuel Prediction", title="Fuel Prediction API", description="API to return predicted fuel prices")
@@ -16,12 +16,11 @@ api = Api(app, default="Fuel Prediction", title="Fuel Prediction API", descripti
 class FuelTypeEnum(enum.Enum):
     E10 = 'E10'
     U91 = 'U91'
-    DL = 'DL'
     P98 = 'P98'
     P95 = 'P95'
 
 search_package = api.model('search', {
-    'fuel_type' : fields.String(description='Fuel type for the fuel prediction', enum=['x.name for x in FuelTypeEnum']),
+    'fuel_type' : fields.String(description='Fuel type for the fuel prediction'),# enum=['x.name for x in FuelTypeEnum']),
     'prediction_start' : fields.DateTime(description='start date for prediction period'),
     'prediction_end': fields.DateTime(description='end date for prediction period')
 })
@@ -49,10 +48,14 @@ class FuelPredictionsForStation(Resource):
     def post(self, station_code):
         search = request.json
         
-        if station_code not in df.index:
-            api.abort(404, "Station {} doesn't exist.".format(search['station_code']))
-
+        if station_code not in df.ServiceStationCode:
+            api.abort(404, "Station {} doesn't exist.".format(station_code))
+            
+        fuel_type = search['fuel_type']
+        pred_start = date.fromisoformat(search['prediction_start'])
+        pred_end = search['prediction_end']
         
+        return {"message": "Prediction is {}".format(fm.get_prediction(pred_start, station_code, fuel_type))}, 200
 
 
 @api.route('/fuel/predictions/time/<int:station_code>')
@@ -80,7 +83,7 @@ class AverageFuelPredictionForSuburb(Resource):
 
 
 if __name__ == "__main__":
-    
+
     df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)
     
     
@@ -93,9 +96,9 @@ if __name__ == "__main__":
     
     map_df = pd.read_csv("station_code_mapping.csv")   
     df = pd.merge(map_df, df, how='inner', on='ServiceStationName')
-    
+
     print(df.head(5).to_string())
 
-    #app.run(debug=True, port=8002)
+    app.run(debug=True, port=8002)
     
     
