@@ -94,10 +94,8 @@ def load_model(df):
     model_x = df[['ServiceStationCode', 'PriceUpdatedDate']].values     # features that dictate prediction
     model_y = df['Price'].values                                        # feature to predict
    
-    print(model_x)
-
-    print(model_x)
-    print(type(model_x))
+    #print(model_x)
+    #print(type(model_x))
     model = LinearRegression()
     model.fit(model_x, model_y)
     return model
@@ -120,5 +118,5 @@ if __name__ == "__main__":
     #init_model()
 
     #get_prediction(date, fuel_station_code, fuel_type)
-    date = datetime.date(2019, 10, 20)  
+    date = datetime.date(2019, 11, 21)  
     get_prediction(date, 0, "E10")  # test prediction
