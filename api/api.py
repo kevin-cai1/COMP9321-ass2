@@ -208,7 +208,46 @@ class AverageFuelPredictionForSuburb(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     def post(self):
-        pass
+        location = request.json
+        
+        req_loc = location['named_location']
+        fuel_type = location['fuel_type'].upper()
+        if fuel_type not in fuel_list:
+            api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
+            
+        if req_loc in df.Suburb.unique():
+            print('its a suburb!')
+            df1 = df.loc[df['Suburb'] == req_loc]
+        elif req_loc not in df.Postcode.unique():
+            print('its a postcode!')
+            df1 = df.query('Postcode == {}'.format(req_loc))
+        else:
+            return {"message": "Location {} not found".format(req_loc)}, 404
+        
+        stations = df1.ServiceStationCode.unique()
+        
+        start_date = date.fromisoformat(location['prediction_start'])
+        end_date = date.fromisoformat(location['prediction_end'])
+        
+        prices= []
+        
+        for single_date in daterange(start_date, end_date):
+            for i in stations:
+                prices.append(int(fm.get_prediction(single_date, i, fuel_type)))
+                
+                  
+        ret = []
+        
+        tmp = {
+            'Status' : 'OK',
+            'Requested_Loc' : req_loc,
+            'Fuel_Type' : fuel_type,
+            'Ave_Price' : np.mean(prices)
+            }
+        
+        ret.append(tmp)
+        
+        return ret
 
 
 if __name__ == "__main__":
