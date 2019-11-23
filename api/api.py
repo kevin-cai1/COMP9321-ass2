@@ -56,7 +56,7 @@ class FuelPredictionsForStation(Resource):
     @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
     @api.response(400, "Fuel Type incorrect")
-    @api.response(404, "Station/Fuel_Type not found")
+    @api.response(404, "Station not found")
     
     def post(self, station_code):
         search = request.json
@@ -103,7 +103,7 @@ class TimeForPriceAtStation(Resource):
     @api.expect(price_package, validate=True)
     @api.response(200, 'Successful')
     @api.response(400, "Fuel Type incorrect")
-    @api.response(404, 'Station/Fuel_Type not found')
+    @api.response(404, 'Station not found')
     def post(self, station_code):
         search = request.json
         
@@ -151,14 +151,47 @@ class TimeForPriceAtStation(Resource):
 class FuelPredictionsForLocation(Resource):
     @api.doc(description="Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)")
     @api.expect(location_model, validate=True)
+    @api.response(200, 'Successful')
+    @api.response(400, "Fuel Type incorrect")
+    @api.response(404, 'Location not found')
     def post(self):
-        pass
-
+        location = request.json
+        
+        loc = location['named_location']
+        fuel_type = location['fuel_type'].upper()
+        if fuel_type not in fuel_list:
+            api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
+            
+        if loc in df.Suburb.unique():
+            print('its a suburb!')
+        elif loc not in df.Postcode.unique():
+            print('its a postcode!')
+        else:
+            return {"message": "Location {} not found".format(loc)}, 404
+            
+        ret = []
+        
+        tmp = {
+            'Status' : 'OK',
+            'Requested_Loc' : loc,
+            'Station_Name' : 'name',
+            'Station_Address' : 'address',
+            'Fuel_Type' : fuel_type,
+            }
+        
+        ret.append(tmp)
+        
+        return ret
+#2204
+#Marrickville
 
 @api.route('/fuel/predictions/average')
 class AverageFuelPredictionForSuburb(Resource):
     @api.doc(description="Returns average predicted fuel price for a given suburb")
     @api.expect(location_model, validate=True)
+    @api.response(200, 'Successful')
+    @api.response(400, "Fuel Type incorrect")
+    @api.response(404, 'Location not found')
     def post(self):
         pass
 
