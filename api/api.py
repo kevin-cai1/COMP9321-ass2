@@ -76,20 +76,15 @@ class FuelPredictionsForStation(Resource):
         ret = []
                   
         tmp = {
-#             'Status' : 'OK',
+            'Status' : 'OK',
             'Station_Code' : station_code,
             'Station_Address' : 'address',
             'Fuel_Type' : fuel_type
             }
-#         tmp['pred_price'] = []
-#         
-#         for x in prices:
-#             tmp2 = {
-#                 'date' : x,
-#                 'price' : prices[x]
-#                 }
-#             tmp['pred_price'].append(tmp2)
-            
+        
+        for x in prices:
+            tmp[x] = int(prices[x])
+
         ret.append(tmp)
         
         return ret
