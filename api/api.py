@@ -13,6 +13,8 @@ import os
 sys.path.append(os.path.abspath('../fuel_model'))
 import fuel_model as fm
 
+import authentication
+
 import json
 import enum
 from datetime import date
@@ -24,7 +26,30 @@ from pandas.tests.extension.test_external_block import df
 from numpy.core.defchararray import lower
 
 app = Flask(__name__)
-api = Api(app, default="Fuel Prediction", title="Fuel Prediction API", description="API to return predicted fuel prices")
+api = Api(app,
+          default="Fuel Prediction",
+          title="Fuel Prediction API",
+          description="API to return predicted fuel prices",
+          authorizations= {
+              'AUTH_TOKEN': {
+                  'type': 'apiKey',
+                  'in': 'header',
+                  'name': 'AUTH_TOKEN'
+              }
+          })
+
+auth = authentication.AuthToken()
+credential_parser = authentication.CredentialParser()
+@api.route('/token')
+class Token(Resource):
+    @api.expect(credential_parser.parser, validate=True)
+    def get(self):
+        api_key = credential_parser.parser.parse_args().get('api_key')
+        # TODO check if valid api key e.g. in database
+        if api_key:
+            return {'tok': auth.generate().decode()}
+        else:
+            return {'msg': 'API key invalid'}, 401
 
 class FuelTypeEnum(enum.Enum):
     E10 = 'E10'
@@ -61,12 +86,14 @@ def daterange(start_date, end_date):
 @api.route('/fuel/predictions/<int:station_code>')
 @api.doc(params={'station_code': 'A petrol station station_code'})
 class FuelPredictionsForStation(Resource):
-    @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station")
+    @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station",
+            security='AUTH_TOKEN')
     @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, "Station not found")
-
+    @api.response(401, "Authentication token missing or invalid")
+    @authentication.authenticate(api, auth)
     def post(self, station_code):
         search = request.json
 
@@ -112,11 +139,14 @@ class FuelPredictionsForStation(Resource):
 
 @api.route('/fuel/predictions/time/<int:station_code>')
 class TimeForPriceAtStation(Resource):
-    @api.doc(description="Returns earliest time for a predicted match to a given price at a station")
+    @api.doc(description="Returns earliest time for a predicted match to a given price at a station",
+             security='AUTH_TOKEN')
     @api.expect(price_package, validate=True)
     @api.response(200, 'Successful')
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Station not found')
+    @api.response(401, "Authentication token missing or invalid")
+    @authentication.authenticate(api, auth)
     def post(self, station_code):
         search = request.json
 
@@ -164,11 +194,14 @@ class TimeForPriceAtStation(Resource):
 
 @api.route('/fuel/predictions/location')
 class FuelPredictionsForLocation(Resource):
-    @api.doc(description="Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)")
+    @api.doc(description="Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)",
+            security='AUTH_TOKEN')
     @api.expect(location_model, validate=True)
     @api.response(200, 'Successful')
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
+    @api.response(401, "Authentication token missing or invalid")
+    @authentication.authenticate(api, auth)
     def post(self):
         location = request.json
 
@@ -223,11 +256,14 @@ class FuelPredictionsForLocation(Resource):
 
 @api.route('/fuel/predictions/average')
 class AverageFuelPredictionForSuburb(Resource):
-    @api.doc(description="Returns average predicted fuel price for a given suburb")
+    @api.doc(description="Returns average predicted fuel price for a given suburb",
+             security='AUTH_TOKEN')
     @api.expect(location_model, validate=True)
     @api.response(200, 'Successful')
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
+    @api.response(401, "Authentication token missing or invalid")
+    @authentication.authenticate(api, auth)
     def post(self):
         location = request.json
 

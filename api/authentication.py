@@ -4,6 +4,7 @@ from functools import wraps
 
 import jwt
 from flask import request
+from flask_restplus import reqparse
 
 class AuthToken:
     def __init__(self):
@@ -13,28 +14,34 @@ class AuthToken:
         payload = {
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
         }
-        return jwt.encode(payload, key=self.secret_key, algorithms=['HS256'])
+        return jwt.encode(payload, key=self.secret_key, algorithm='HS256')
 
     def validate(self, token):
-        try {
-            return jwt.decode(token, key=self.secret_key, algorithms=['HS256'])
-        }
+        try:
+            return jwt.decode(token.encode(), key=self.secret_key, algorithm='HS256')
         except jwt.ExpiredSignatureError:
             raise
 
-def authenticate(auth, f):
-    @wraps(f)
-    def inner(*args, **kwargs):
-        token = request.headers.get('AUTH_TOKEN')
-        if token:
-            try:
-                auth.validate(token)
-                return f(*args, **kwargs)
-            except jwt.ExpiredSignatureError:
-                abort(401, "Token expired")
-            except:
-                abort(500)
-        else:
-            abort(401, 'Token missing')
+class CredentialParser:
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('api_key', type=str)
 
-    return inner
+def authenticate(api, auth):
+    def decorator(f):
+        @wraps(f)
+        def inner(*args, **kwargs):
+            token = request.headers.get('AUTH_TOKEN')
+            if token:
+                try:
+                    auth.validate(token)
+                    return f(*args, **kwargs)
+                except jwt.ExpiredSignatureError:
+                    api.abort(401, "Token expired")
+                except:
+                    api.abort(500)
+            else:
+                api.abort(401, 'Token missing')
+
+        return inner
+    return decorator
