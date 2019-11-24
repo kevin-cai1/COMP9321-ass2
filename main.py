@@ -23,7 +23,7 @@ def track_event(category, action, label=None, value=0):
         'tid': GA_TRACKING_ID,  # Tracking ID / Property ID.
         # Anonymous Client Identifier. Ideally, this should be a UUID that
         # is associated with particular user, device, or browser instance.
-        'cid': randint(),
+        'cid': '1',
         't': 'event',  # Event hit type.
         'ec': category,  # Event category.
         'ea': action,  # Event action.
