@@ -14,11 +14,12 @@ class AuthToken:
         payload = {
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
         }
-        return jwt.encode(payload, key=self.secret_key, algorithm='HS256')
+        return (jwt.encode(payload, key=self.secret_key, algorithm='HS256')
+                   .decode('utf-8'))
 
     def validate(self, token):
         try:
-            return jwt.decode(token.encode(), key=self.secret_key, algorithm='HS256')
+            return jwt.decode(token.encode('utf-8'), key=self.secret_key, algorithm='HS256')
         except:
             raise
 

@@ -52,7 +52,7 @@ class Token(Resource):
         api_key = request.headers.get('API_KEY')
         # TODO check if valid api key e.g. in database
         if api_key:
-            return {'tok': auth.generate().decode()}
+            return {'tok': auth.generate()}
         else:
             return {'msg': 'API key invalid'}, 401
 
