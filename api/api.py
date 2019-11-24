@@ -46,7 +46,7 @@ auth = authentication.AuthToken()
 
 @api.route('/token')
 class Token(Resource):
-    @api.doc("Gives an authentication token")
+    @api.doc(description="Gives an authentication token")
     @api.doc(security='API_KEY')
     def get(self):
         api_key = request.headers.get('API_KEY')
