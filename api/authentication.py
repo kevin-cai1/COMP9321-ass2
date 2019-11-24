@@ -35,6 +35,8 @@ def authenticate(api, auth):
                     api.abort(401, "Token expired")
                 except jwt.InvalidSignatureError:
                     api.abort(401, "Token signature mismatch")
+                except jwt.DecodeError:
+                    api.abort(401, "Token invalid")
                 except:
                     api.abort(500)
             else:
