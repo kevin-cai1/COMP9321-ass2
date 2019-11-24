@@ -4,6 +4,9 @@ from flask_restplus import fields
 import pandas as pd
 import numpy as np
 
+import sys
+import os
+sys.path.append(os.path.abspath('../fuel_model'))
 import fuel_model as fm
     
 import json
