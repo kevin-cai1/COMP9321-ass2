@@ -31,20 +31,25 @@ api = Api(app,
           title="Fuel Prediction API",
           description="API to return predicted fuel prices",
           authorizations= {
+              'API_KEY': {
+                  'type': 'apiKey',
+                  'in': 'header',
+                  'name': 'API_KEY'
+              },
               'AUTH_TOKEN': {
                   'type': 'apiKey',
                   'in': 'header',
                   'name': 'AUTH_TOKEN'
               }
           })
-
 auth = authentication.AuthToken()
-credential_parser = authentication.CredentialParser()
+
 @api.route('/token')
 class Token(Resource):
-    @api.expect(credential_parser.parser, validate=True)
+    @api.doc("Gives an authentication token")
+    @api.doc(security='API_KEY')
     def get(self):
-        api_key = credential_parser.parser.parse_args().get('api_key')
+        api_key = request.headers.get('API_KEY')
         # TODO check if valid api key e.g. in database
         if api_key:
             return {'tok': auth.generate().decode()}

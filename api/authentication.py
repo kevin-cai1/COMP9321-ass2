@@ -19,13 +19,8 @@ class AuthToken:
     def validate(self, token):
         try:
             return jwt.decode(token.encode(), key=self.secret_key, algorithm='HS256')
-        except jwt.ExpiredSignatureError:
+        except:
             raise
-
-class CredentialParser:
-    def __init__(self):
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument('api_key', type=str)
 
 def authenticate(api, auth):
     def decorator(f):
@@ -38,6 +33,8 @@ def authenticate(api, auth):
                     return f(*args, **kwargs)
                 except jwt.ExpiredSignatureError:
                     api.abort(401, "Token expired")
+                except jwt.InvalidSignatureError:
+                    api.abort(401, "Token signature mismatch")
                 except:
                     api.abort(500)
             else:
