@@ -13,7 +13,7 @@ import json
 import enum
 from datetime import date
 from numpy.core.arrayprint import DatetimeFormat
-from Lib.datetime import timedelta, datetime
+from datetime import timedelta, datetime
 from flask.json import jsonify
 from _ast import If
 from pandas.tests.extension.test_external_block import df
@@ -254,19 +254,7 @@ class AverageFuelPredictionForSuburb(Resource):
 
 
 if __name__ == "__main__":
-
-    df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)
-    
-    
-    df2 = df.query('1000 <= Postcode <= 2249')
-    df3 = df.query('2760 <= Postcode <= 2770')
- 
-    df = df2.append(df3, ignore_index=True)
-    df = df.dropna()
-    df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(fm.extract_date)
-    
-    map_df = pd.read_csv("station_code_mapping.csv")   
-    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+    df = fm.read_data()
     
     #print(df1.head(5).to_string())
     
