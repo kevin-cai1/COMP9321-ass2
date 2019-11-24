@@ -12,6 +12,9 @@ from datetime import date
 from numpy.core.arrayprint import DatetimeFormat
 from Lib.datetime import timedelta, datetime
 from flask.json import jsonify
+from _ast import If
+from pandas.tests.extension.test_external_block import df
+from numpy.core.defchararray import lower
 
 app = Flask(__name__)
 api = Api(app, default="Fuel Prediction", title="Fuel Prediction API", description="API to return predicted fuel prices")
@@ -30,17 +33,18 @@ search_package = api.model('search', {
     'prediction_end': fields.DateTime(description='end date for prediction period (yyyy-mm-dd)')
 })
 
+price_package = api.model('price', {
+    'fuel_type' : fields.String(description='Fuel type for the fuel prediction'),# enum=['x.name for x in FuelTypeEnum']),
+    'price_req' : fields.Integer(description='Desired Price for date prediction'),
+    'prediction_start' : fields.DateTime(description='start date for prediction period (yyyy-mm-dd)'),
+    'prediction_end': fields.DateTime(description='end date for prediction period (yyyy-mm-dd)')
+})
+
 location_model = api.model('location', {
     'fuel_type' : fields.String(description='Fuel type for the fuel prediction', enum=[x.name for x in FuelTypeEnum]),
     'named_location' : fields.String(description='suburb or postcode'),
     'prediction_start' : fields.DateTime(description='start date for prediction period (yyyy-mm-dd)'),
     'prediction_end': fields.DateTime(description='end date for prediction period (yyyy-mm-dd)')
-})
-
-prediction_model = api.model('prediction', {
-    'station_name' : fields.String(description='Name of fuel station'),
-    'fuel_type' : fields.String(description='Fuel type for the fuel prediction', enum=[x.name for x in FuelTypeEnum]),
-    'date' : fields.DateTime(description='date for price predicted (yyyy-mm-dd)')
 })
 
 def daterange(start_date, end_date):
@@ -53,7 +57,9 @@ class FuelPredictionsForStation(Resource):
     @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station")
     @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
-    @api.response(404, "Station/Fuel_Type not found")
+    @api.response(400, "Fuel Type incorrect")
+    @api.response(404, "Station not found")
+    
     def post(self, station_code):
         search = request.json
         
@@ -62,7 +68,7 @@ class FuelPredictionsForStation(Resource):
           
         fuel_type = search['fuel_type'].upper()
         if fuel_type not in fuel_list:
-            api.abort(404, "Fuel Type {} doesn't exist".format(fuel_type))
+            api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
             
         start_date = date.fromisoformat(search['prediction_start'])
         end_date = date.fromisoformat(search['prediction_end'])
@@ -70,15 +76,18 @@ class FuelPredictionsForStation(Resource):
         prices = {}
         
         for single_date in daterange(start_date, end_date):
-            print(single_date.strftime("%Y-%m-%d"))
             prices[single_date.strftime("%Y-%m-%d")] = fm.get_prediction(single_date, station_code, fuel_type)
         
         ret = []
+        
+        df1 = df.query('ServiceStationCode == {}'.format(station_code))
+        [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
                   
         tmp = {
             'Status' : 'OK',
             'Station_Code' : station_code,
-            'Station_Address' : 'address',
+            'Station_Name' : name,
+            'Station_Address' : address,
             'Fuel_Type' : fuel_type
             }
         
@@ -93,25 +102,152 @@ class FuelPredictionsForStation(Resource):
 @api.route('/fuel/predictions/time/<int:station_code>')
 class TimeForPriceAtStation(Resource):
     @api.doc(description="Returns earliest time for a predicted match to a given price at a station")
-    @api.expect(search_package, validate=True)
-    def post(self):
-        pass
+    @api.expect(price_package, validate=True)
+    @api.response(200, 'Successful')
+    @api.response(400, "Fuel Type incorrect")
+    @api.response(404, 'Station not found')
+    def post(self, station_code):
+        search = request.json
+        
+        if station_code not in df.ServiceStationCode:
+            api.abort(404, "Station {} doesn't exist".format(station_code))
+          
+        fuel_type = search['fuel_type'].upper()
+        if fuel_type not in fuel_list:
+            api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
+            
+        start_date = date.fromisoformat(search['prediction_start'])
+        end_date = date.fromisoformat(search['prediction_end'])
+        price_req = search['price_req']
+        
+        for single_date in daterange(start_date, end_date):
+            if int(fm.get_prediction(single_date, station_code, fuel_type)) <= price_req:
+                date_of_price = single_date.strftime("%Y-%m-%d")
+                break
+        else:
+            return {"message": "Requested price ({}) was not found in requested time".format(price_req)}, 404
+        
+        ret = []
+        
+        df1 = df.query('ServiceStationCode == {}'.format(station_code))
+        [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
+                  
+        tmp = {
+            'Status' : 'OK',
+            'Station_Code' : station_code,
+            'Station_Name' : name,
+            'Station_Address' : address,
+            'Fuel_Type' : fuel_type,
+            'Price_Req' : price_req,
+            'Date_of_Price' : date_of_price
+            }
+        
+        ret.append(tmp)
+        
+        return ret
 
 
 @api.route('/fuel/predictions/location')
 class FuelPredictionsForLocation(Resource):
     @api.doc(description="Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)")
     @api.expect(location_model, validate=True)
+    @api.response(200, 'Successful')
+    @api.response(400, "Fuel Type incorrect")
+    @api.response(404, 'Location not found')
     def post(self):
-        pass
+        location = request.json
+        
+        req_loc = location['named_location']
+        fuel_type = location['fuel_type'].upper()
+        if fuel_type not in fuel_list:
+            api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
+            
+        if req_loc in df.Suburb.unique():
+            print('its a suburb!')
+            df1 = df.loc[df['Suburb'] == req_loc]
+        elif req_loc not in df.Postcode.unique():
+            print('its a postcode!')
+            df1 = df.query('Postcode == {}'.format(req_loc))
+        else:
+            return {"message": "Location {} not found".format(req_loc)}, 404
+        
+        stations = df1.ServiceStationCode.unique()
+        
+        start_date = date.fromisoformat(location['prediction_start'])
+        end_date = date.fromisoformat(location['prediction_end'])
+        
+        prices= {}
+        
+        for single_date in daterange(start_date, end_date):
+            date_string = single_date.strftime("%Y-%m-%d")
+            prices[date_string] = []
+            for i in stations:
+                prices[date_string].append(int(fm.get_prediction(single_date, i, fuel_type)))
+            
+        ret = []
+        
+        tmp = {
+            'Status' : 'OK',
+            'Requested_Loc' : req_loc,
+            'Fuel_Type' : fuel_type,
+            }
+        
+        for x in prices:
+            tmp[x] = np.mean(prices[x])
+        
+        ret.append(tmp)
+        
+        return ret
 
 
 @api.route('/fuel/predictions/average')
 class AverageFuelPredictionForSuburb(Resource):
     @api.doc(description="Returns average predicted fuel price for a given suburb")
     @api.expect(location_model, validate=True)
+    @api.response(200, 'Successful')
+    @api.response(400, "Fuel Type incorrect")
+    @api.response(404, 'Location not found')
     def post(self):
-        pass
+        location = request.json
+        
+        req_loc = location['named_location']
+        fuel_type = location['fuel_type'].upper()
+        if fuel_type not in fuel_list:
+            api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
+            
+        if req_loc in df.Suburb.unique():
+            print('its a suburb!')
+            df1 = df.loc[df['Suburb'] == req_loc]
+        elif req_loc not in df.Postcode.unique():
+            print('its a postcode!')
+            df1 = df.query('Postcode == {}'.format(req_loc))
+        else:
+            return {"message": "Location {} not found".format(req_loc)}, 404
+        
+        stations = df1.ServiceStationCode.unique()
+        
+        start_date = date.fromisoformat(location['prediction_start'])
+        end_date = date.fromisoformat(location['prediction_end'])
+        
+        prices= []
+        
+        for single_date in daterange(start_date, end_date):
+            for i in stations:
+                prices.append(int(fm.get_prediction(single_date, i, fuel_type)))
+                
+                  
+        ret = []
+        
+        tmp = {
+            'Status' : 'OK',
+            'Requested_Loc' : req_loc,
+            'Fuel_Type' : fuel_type,
+            'Ave_Price' : np.mean(prices)
+            }
+        
+        ret.append(tmp)
+        
+        return ret
 
 
 if __name__ == "__main__":
@@ -127,10 +263,10 @@ if __name__ == "__main__":
     df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(fm.extract_date)
     
     map_df = pd.read_csv("station_code_mapping.csv")   
-    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')
-
-    # print(df.head(5).to_string())
-
+    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+    
+    #print(df1.head(5).to_string())
+    
     app.run(debug=True, port=8002)
     
     
