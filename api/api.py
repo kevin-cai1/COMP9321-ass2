@@ -4,6 +4,8 @@ from flask_restplus import fields
 import pandas as pd
 import numpy as np
 
+from analytics import track_event
+
 import logging
 import requests
 import sys
@@ -23,31 +25,6 @@ from numpy.core.defchararray import lower
 
 app = Flask(__name__)
 api = Api(app, default="Fuel Prediction", title="Fuel Prediction API", description="API to return predicted fuel prices")
-
-# Environment variables are defined in app.yaml.
-GA_TRACKING_ID = os.environ['GA_TRACKING_ID']
-
-# Event tracker
-def track_event(category, action, label=None, value=0):
-    data = {
-        'v': '1',  # API Version.
-        'tid': GA_TRACKING_ID,  # Tracking ID / Property ID.
-        # Anonymous Client Identifier. Ideally, this should be a UUID that
-        # is associated with particular user, device, or browser instance.
-        'cid': '1',
-        't': 'event',  # Event hit type.
-        'ec': category,  # Event category.
-        'ea': action,  # Event action.
-        'el': label,  # Event label.
-        'ev': value,  # Event value, must be an integer
-    }
-
-    response = requests.post('https://www.google-analytics.com/collect', data=data)
-
-    # If the request fails, this will raise a RequestException. Depending
-    # on your application's needs, this may be a non-error and can be caught
-    # by the caller.
-    response.raise_for_status()
 
 class FuelTypeEnum(enum.Enum):
     E10 = 'E10'
@@ -94,12 +71,12 @@ class FuelPredictionsForStation(Resource):
         search = request.json
 
         if station_code not in df.ServiceStationCode:
-            track_event(category='API', action='Wrong Service Station')
+            track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
         fuel_type = search['fuel_type'].upper()
         if fuel_type not in fuel_list:
-            track_event(category='API', action='Wrong Fuel Type')
+            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         start_date = date.fromisoformat(search['prediction_start'])
@@ -128,7 +105,7 @@ class FuelPredictionsForStation(Resource):
 
         ret.append(tmp)
 
-        track_event(category='API', action='Fuel Type Tracked')
+        track_event(category='Fuel Prediction', action='For Station')
 
         return ret
 
@@ -144,10 +121,12 @@ class TimeForPriceAtStation(Resource):
         search = request.json
 
         if station_code not in df.ServiceStationCode:
+            track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
         fuel_type = search['fuel_type'].upper()
         if fuel_type not in fuel_list:
+            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         start_date = date.fromisoformat(search['prediction_start'])
@@ -178,6 +157,8 @@ class TimeForPriceAtStation(Resource):
 
         ret.append(tmp)
 
+        track_event(category='Fuel Prediction', action='Time For Prices')
+
         return ret
 
 
@@ -194,15 +175,19 @@ class FuelPredictionsForLocation(Resource):
         req_loc = location['named_location']
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
+            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         if req_loc in df.Suburb.unique():
+            track_event(category='Fuel Prediction', action='Suburb Entered')
             print('its a suburb!')
             df1 = df.loc[df['Suburb'] == req_loc]
         elif req_loc not in df.Postcode.unique():
+            track_event(category='Fuel Prediction', action='Postcode Entered')
             print('its a postcode!')
             df1 = df.query('Postcode == {}'.format(req_loc))
         else:
+            track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
         stations = df1.ServiceStationCode.unique()
@@ -231,6 +216,8 @@ class FuelPredictionsForLocation(Resource):
 
         ret.append(tmp)
 
+        track_event(category='Fuel Prediction', action='For Location')
+
         return ret
 
 
@@ -247,15 +234,19 @@ class AverageFuelPredictionForSuburb(Resource):
         req_loc = location['named_location']
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
+            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         if req_loc in df.Suburb.unique():
+            track_event(category='Fuel Prediction', action='Location Entered')
             print('its a suburb!')
             df1 = df.loc[df['Suburb'] == req_loc]
         elif req_loc not in df.Postcode.unique():
+            track_event(category='Fuel Prediction', action='Postcode Entered')
             print('its a postcode!')
             df1 = df.query('Postcode == {}'.format(req_loc))
         else:
+            track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
         stations = df1.ServiceStationCode.unique()
@@ -281,12 +272,14 @@ class AverageFuelPredictionForSuburb(Resource):
 
         ret.append(tmp)
 
+        track_event(category='Fuel Prediction', action='Average Fuel For Suburbs')
+
         return ret
 
 
 if __name__ == "__main__":
     df = fm.read_data()
-    
+
 
     #print(df1.head(5).to_string())
 
