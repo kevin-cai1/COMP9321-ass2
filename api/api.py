@@ -104,7 +104,7 @@ class FuelPredictionsForStation(Resource):
     def post(self, station_code):
         search = request.json
 
-        if station_code not in df.ServiceStationCode:
+        if station_code not in df.ServiceStationCode_x:
             #track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
@@ -131,7 +131,7 @@ class FuelPredictionsForStation(Resource):
 
         ret = []
 
-        df1 = df.query('ServiceStationCode == {}'.format(station_code))
+        df1 = df.query('ServiceStationCode_x == {}'.format(station_code))
         if not df1.empty:
             [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
 
@@ -167,7 +167,7 @@ class TimeForPriceAtStation(Resource):
     def post(self, station_code):
         search = request.json
 
-        if station_code not in df.ServiceStationCode:
+        if station_code not in df.ServiceStationCode_x:
             #track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
@@ -189,7 +189,7 @@ class TimeForPriceAtStation(Resource):
 
         ret = []
 
-        df1 = df.query('ServiceStationCode == {}'.format(station_code))
+        df1 = df.query('ServiceStationCode_x == {}'.format(station_code))
         if not df1.empty:
             [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
 
@@ -329,7 +329,7 @@ class AverageFuelPredictionForSuburb(Resource):
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
-        stations = loc_df.ServiceStationCode.unique()
+        stations = loc_df.ServiceStationCode_x.unique()
 
         start_date = _parse_date(req['prediction_start'])
         end_date = _parse_date(req['prediction_end'])
