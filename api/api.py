@@ -96,6 +96,7 @@ class FuelPredictionsForStation(Resource):
     @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
     @api.response(400, "Fuel Type incorrect")
+    @api.response(400, "Date Type incorrect")
     @api.response(404, "Station not found")
     @api.response(401, "Authentication token missing or invalid")
     @authentication.authenticate(api, auth)
@@ -110,9 +111,17 @@ class FuelPredictionsForStation(Resource):
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
+        try:
+            start_date = date.fromisoformat(search['prediction_start'])
+        except ValueError:
+            api.abort(400, "Date type is incorrect")
+        
+        try:
+             end_date = date.fromisoformat(search['prediction_end'])
+        except ValueError:
+            api.abort(400, "Date type is incorrect")
 
-        start_date = date.fromisoformat(search['prediction_start'])
-        end_date = date.fromisoformat(search['prediction_end'])
+
 
         prices = {}
 
@@ -212,17 +221,20 @@ class FuelPredictionsForLocation(Resource):
     @authentication.authenticate(api, auth)
     def post(self):
         location = request.json
-
-        req_loc = location['named_location']
+        req_loc = location['named_location'].lower()
+        print(req_loc)
+        suburb_list = df.Suburb.unique()
+        suburb_list = suburb_list.astype(str)
+        suburb_list = np.char.lower(suburb_list)
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
-        if req_loc in df.Suburb.unique():
+        if req_loc in suburb_list:
             #track_event(category='Fuel Prediction', action='Suburb Entered')
             print('its a suburb!')
-            df1 = df.loc[df['Suburb'] == req_loc]
+            df1 = df.query('Suburb == @req_loc')
         elif req_loc not in df.Postcode.unique():
             #track_event(category='Fuel Prediction', action='Postcode Entered')
             print('its a postcode!')
@@ -230,8 +242,11 @@ class FuelPredictionsForLocation(Resource):
         else:
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
+        
+        print(df1)
 
         stations = df1.ServiceStationCode.unique()
+        print(stations)
 
         start_date = date.fromisoformat(location['prediction_start'])
         end_date = date.fromisoformat(location['prediction_end'])
@@ -243,19 +258,33 @@ class FuelPredictionsForLocation(Resource):
             prices[date_string] = []
             for i in stations:
                 prices[date_string].append(int(fm.get_prediction(single_date, i, fuel_type)))
+                
+        prices = {}
+        for station in stations:
+            station_prices = []
+            for single_date in daterange(start_date, end_date):
+                date_string = single_date.strftime("%Y-%m-%d")
+                station_prices.append(round(float(fm.get_prediction(single_date, station, fuel_type)), 2))
+            print(station_prices)
+            print(station)
+            prices[station] = station_prices
 
+        print(prices)
         ret = []
 
-        tmp = {
+        
+
+        for station in prices:
+            price = (round(float(np.mean(prices[station])), 2))
+            print(station)
+            tmp = {
             'Status' : 'OK',
             'Requested_Loc' : req_loc,
+            'Station_Code' : int(station),
             'Fuel_Type' : fuel_type,
+            'AveragePrice' : price
             }
-
-        for x in prices:
-            tmp[x] = np.mean(prices[x])
-
-        ret.append(tmp)
+            ret.append(tmp)
 
         #track_event(category='Fuel Prediction', action='For Location')
 
@@ -339,6 +368,7 @@ if __name__ == "__main__":
     
     map_df = pd.read_csv("station_code_mapping.csv")   
     df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+    df['Suburb'] = df['Suburb'].str.lower()
     print(df)
 
     #print(df1.head(5).to_string())
