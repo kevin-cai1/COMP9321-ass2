@@ -3,6 +3,6 @@ flask-restplus==0.13.0
 matplotlib==1.5.1
 numpy==1.17.2
 pandas==0.24.2
-requests==2.9.1
+requests==2.20.0
 scipy==0.17.0
 virtualenv==15.0.1
