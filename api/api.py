@@ -179,19 +179,20 @@ class TimeForPriceAtStation(Resource):
         ret = []
 
         df1 = df.query('ServiceStationCode == {}'.format(station_code))
-        [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
+        if not df1.empty:
+            [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
 
-        tmp = {
-            'Status' : 'OK',
-            'Station_Code' : station_code,
-            'Station_Name' : name,
-            'Station_Address' : address,
-            'Fuel_Type' : fuel_type,
-            'Price_Req' : price_req,
-            'Date_of_Price' : date_of_price
-            }
+            tmp = {
+                'Status' : 'OK',
+                'Station_Code' : station_code,
+                'Station_Name' : name,
+                'Station_Address' : address,
+                'Fuel_Type' : fuel_type,
+                'Price_Req' : price_req,
+                'Date_of_Price' : date_of_price
+                }
 
-        ret.append(tmp)
+            ret.append(tmp)
 
         #track_event(category='Fuel Prediction', action='Time For Prices')
 
