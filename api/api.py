@@ -219,12 +219,12 @@ class FuelPredictionsForLocation(Resource):
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
-        df1 = _location_query(req_loc, df)
-        if df1.empty:
+        loc_df = _location_query(req_loc, df)
+        if loc_df.empty:
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
-        stations = df1.ServiceStationCode.unique()
+        stations = loc_df.ServiceStationCode.unique()
 
         start_date = date.fromisoformat(req['prediction_start'])
         end_date = date.fromisoformat(req['prediction_end'])
@@ -274,19 +274,12 @@ class AverageFuelPredictionForSuburb(Resource):
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
-        if req_loc in df.Suburb.unique():
-            #track_event(category='Fuel Prediction', action='Location Entered')
-            print('its a suburb!')
-            df1 = df.loc[df['Suburb'] == req_loc]
-        elif req_loc not in df.Postcode.unique():
-            #track_event(category='Fuel Prediction', action='Postcode Entered')
-            print('its a postcode!')
-            df1 = df.query('Postcode == {}'.format(req_loc))
-        else:
+        loc_df = _location_query(req_loc, df)
+        if loc_df.empty:
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
-        stations = df1.ServiceStationCode.unique()
+        stations = loc_df.ServiceStationCode.unique()
 
         start_date = date.fromisoformat(location['prediction_start'])
         end_date = date.fromisoformat(location['prediction_end'])
