@@ -8,10 +8,11 @@
       <div class="col-md-12">
         <h2>Fuel Pricing by Station</h2>
         <label>Start typing the name of a fuel station and the field will auto-complete</label>
-      <v-autocomplete :items="items" v-model="item" :get-label="setLabel" :component-item="itemTemplate" @update-items="inputChange" @item-selected="itemSelected"></v-autocomplete>
+        <v-autocomplete :items="items" v-model="item" :get-label="setLabel" :component-item="itemTemplate" @update-items="inputChange" @item-selected="itemSelected"></v-autocomplete>
       </div>
     </div>
     </div>
+    <p v-if="results">{{ results }}</p>
   </div>
 </template>
 
@@ -24,7 +25,9 @@ export default {
     return {
       item: {},
       itemTemplate,
-      items: this.hardcodedStationList
+      items: this.hardcodedStationList,
+      results: {},
+      googleMaps: {}
     }
   },
   components: {
@@ -35,14 +38,24 @@ export default {
   },
   methods: {
     itemSelected (item) {
-      this.item = item;
+      this.item = item 
+      fetch('http://127.0.0.1:8002/fuel/predictions/'+item.id, {
+        method: 'post',
+        body: JSON.stringify({
+          fuel_type: 'E10',
+          prediction_start: '2018-09-10',
+          prediction_end: '2019-09-10'
+        })
+      }).then(function(response) {
+        this.result = response.json()
+      })
     },
     setLabel (item) {
-      return item.name;
+      return item.name
     },
     inputChange (text) {
       // your search method
-      this.items = this.hardcodedStationList.filter(item => item.name.toLowerCase().includes(text.toLowerCase()));
+      this.items = this.hardcodedStationList.filter(item => item.name.toLowerCase().includes(text.toLowerCase()))
       // now `items` will be showed in the suggestion list
     },
   }
