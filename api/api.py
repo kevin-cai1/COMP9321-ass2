@@ -49,7 +49,6 @@ api = Api(app,
 auth = authentication.AuthToken()
 CORS(app)
 
-
 @api.route('/token')
 class Token(Resource):
     @api.doc(description="Gives an authentication token")
