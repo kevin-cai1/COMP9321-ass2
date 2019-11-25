@@ -140,6 +140,37 @@ def read_data():
     df = normalize_data(df) # format data for necessary rows and columns
     return df
 
+def extract_date(x):
+    x = str(x).split(' ')   # gets just the date
+    x = x[0]
+    date = x.split('/')
+    date_date = datetime.date(int(date[2]), int(date[1]), int(date[0])) #date(year, month, day)
+    return date_date.toordinal()
+
+def api_read():
+    today = datetime.date.today()
+    end_date = today - datetime.timedelta(days=today.day)   # offset to account for upload of data
+    period = datetime.timedelta(days=end_date.day)
+    start_date = end_date - period
+    print(end_date, start_date)
+
+    df = price_history.read(start=start_date, end=end_date) # read data from dataset
+
+    #df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)   # load dataset
+    df['Postcode'] = df['Postcode'].apply(pd.to_numeric)
+
+    df2 = df.query('1000 <= Postcode <= 2249')
+    df3 = df.query('2760 <= Postcode <= 2770')
+ 
+    df = df2.append(df3, ignore_index=True)
+    df = df.dropna()
+    df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(lambda x: x.toordinal())
+    
+    map_df = pd.read_csv("station_code_mapping.csv")   
+    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+    return df
+
+
 if __name__ == "__main__":
     init_model()
     
