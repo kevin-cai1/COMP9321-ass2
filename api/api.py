@@ -120,7 +120,7 @@ class FuelPredictionsForStation(Resource):
             prices[single_date.strftime("%Y-%m-%d")] = fm.get_prediction(single_date, station_code, fuel_type)
 
         ret = []
-
+        print(station_code)
         df1 = df.query('ServiceStationCode == {}'.format(station_code))
         [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
 
@@ -137,7 +137,7 @@ class FuelPredictionsForStation(Resource):
 
         ret.append(tmp)
 
-        track_event(category='Fuel Prediction', action='For Station')
+        #track_event(category='Fuel Prediction', action='For Station')
 
         return ret
 
@@ -324,17 +324,20 @@ if __name__ == "__main__":
     #df = fm.api_read()
     df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)
     
-    
+    print(df)
+    df = df.dropna()
+
+
     df2 = df.query('1000 <= Postcode <= 2249')
     df3 = df.query('2760 <= Postcode <= 2770')
  
     df = df2.append(df3, ignore_index=True)
-    df = df.dropna()
     df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(fm.extract_date)
     
     map_df = pd.read_csv("station_code_mapping.csv")   
     df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+    print(df)
 
     #print(df1.head(5).to_string())
 
-    app.run(debug=True, port=8001)
+    app.run(debug=True, port=8003)
