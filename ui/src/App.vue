@@ -9,16 +9,24 @@
         <h2>Fuel Pricing by Station</h2>
         <label>Start typing the name of a fuel station and the field will auto-complete</label>
         <v-autocomplete :items="items" v-model="item" :get-label="setLabel" :component-item="itemTemplate" @update-items="inputChange" @item-selected="itemSelected"></v-autocomplete>
+        <br/><b-form-input v-model="startDate" placeholder="Start date (form YYYY-MM-DD)"></b-form-input>
+        <br/><b-form-input v-model="endDate" placeholder="End date (form YYYY-MM-DD)"></b-form-input>
+        <br/><b-form-select v-model="fuelType" :options="fuels"></b-form-select>
+        <br/><br/><b-button variant="success" v-on:click="getPredictions">Predict Me Baby!</b-button>
+        <br/><br/>
+        <Station v-if="results" :result="results"/>
       </div>
     </div>
     </div>
-    <p v-if="results">{{ results }}</p>
+    <!-- <p v-if="results">{{ results }}</p> -->
   </div>
 </template>
 
 <script>
 import itemTemplate from './ItemTemplate.vue';
 import Autocomplete from 'v-autocomplete';
+import Station from './components/Station.vue'
+import axios from 'axios';
 export default {
   name: 'App',
   data: function() {
@@ -26,32 +34,46 @@ export default {
       item: {},
       itemTemplate,
       items: this.hardcodedStationList,
-      results: {},
-      googleMaps: {}
+      results: null,
+      googleMaps: {},
+      startDate: '',
+      endDate: '',
+      fuelType: '',
+      fuels: ['E10', 'U91', 'P98', 'P95']
     }
   },
   components: {
-    'v-autocomplete': Autocomplete
+    'v-autocomplete': Autocomplete,
+    'Station': Station
   },
   props: {
     hardcodedStationList: Array
   },
   methods: {
-    itemSelected (item) {
-      this.item = item 
-      fetch('http://127.0.0.1:8002/fuel/predictions/'+item.id, {
-        method: 'post',
-        body: JSON.stringify({
-          fuel_type: 'E10',
-          prediction_start: '2018-09-10',
-          prediction_end: '2019-09-10'
+    getPredictions () {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:8003/fuel/predictions/'+this.item.id,
+        headers: {
+          'Accept': 'text/plain',
+          'Content-Type': 'text/plain'
+        },
+        data: JSON.stringify({
+          fuel_type: this.fuelType,
+          prediction_start: this.startDate,
+          prediction_end: this.endDate
         })
-      }).then(function(response) {
-        this.result = response.json()
-      })
+      }).then(response => (this.results = response.data[0]))
+    },
+    itemSelected (item) {
+      this.item = item
+      
     },
     setLabel (item) {
-      return item.name
+      if (item != null) {
+        return item.name
+      }
+      return ""
     },
     inputChange (text) {
       // your search method
