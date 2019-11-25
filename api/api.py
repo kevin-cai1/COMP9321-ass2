@@ -137,7 +137,7 @@ class FuelPredictionsForStation(Resource):
             tmp[x] = round(float(prices[x]), 2)
 
 
-            ret.append(tmp)
+        ret.append(tmp)
 
         #track_event(category='Fuel Prediction', action='For Station')
 
