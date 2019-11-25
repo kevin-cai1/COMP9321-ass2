@@ -218,14 +218,12 @@ class FuelPredictionsForLocation(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     @api.response(401, "Authentication token missing or invalid")
-    @authentication.authenticate(api, auth)
+    #@authentication.authenticate(api, auth)
     def post(self):
         location = request.json
         req_loc = location['named_location'].lower()
         print(req_loc)
         suburb_list = df.Suburb.unique()
-        suburb_list = suburb_list.astype(str)
-        suburb_list = np.char.lower(suburb_list)
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
