@@ -287,41 +287,33 @@ class AverageFuelPredictionForSuburb(Resource):
     #@authentication.authenticate(api, auth)
     def post(self):
         req = request.json
-
-        req_loc = req['named_location']
+        
         fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
-
+    
+        req_loc = req['named_location'].lower()
         loc_df = _location_query(req_loc, df)
         if loc_df.empty:
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
         stations = loc_df.ServiceStationCode.unique()
-
         start_date = _parse_date(req['prediction_start'])
         end_date = _parse_date(req['prediction_end'])
-
         prices= []
 
         for single_date in daterange(start_date, end_date):
             for i in stations:
                 prices.append(int(fm.get_prediction(single_date, i, fuel_type)))
 
-
-        ret = []
-
-        tmp = {
+        ret = [{
             'Status' : 'OK',
             'Requested_Loc' : req_loc,
             'Fuel_Type' : fuel_type,
             'Ave_Price' : np.mean(prices)
-            }
-
-        ret.append(tmp)
-
+            }]
         #track_event(category='Fuel Prediction', action='Average Fuel For Suburbs')
 
         return ret
