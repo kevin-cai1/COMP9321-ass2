@@ -100,7 +100,7 @@ class FuelPredictionsForStation(Resource):
     @api.response(400, "Date Type incorrect")
     @api.response(404, "Station not found")
     @api.response(401, "Authentication token missing or invalid")
-    ##@authentication.authenticate(api, auth)
+    @authentication.authenticate(api, auth)
     def post(self, station_code):
         search = request.json
 
@@ -163,7 +163,7 @@ class TimeForPriceAtStation(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Station not found')
     @api.response(401, "Authentication token missing or invalid")
-    #@authentication.authenticate(api, auth)
+    @authentication.authenticate(api, auth)
     def post(self, station_code):
         search = request.json
 
@@ -219,7 +219,7 @@ class FuelPredictionsForLocation(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     @api.response(401, "Authentication token missing or invalid")
-    #@authentication.authenticate(api, auth)
+    @authentication.authenticate(api, auth)
     def post(self):
         location = request.json
         req_loc = location['named_location'].lower()
@@ -314,7 +314,7 @@ class AverageFuelPredictionForSuburb(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     @api.response(401, "Authentication token missing or invalid")
-    #@authentication.authenticate(api, auth)
+    @authentication.authenticate(api, auth)
     def post(self):
         req = request.json
 
