@@ -9,7 +9,7 @@
         <br/><b-form-select text="Fuel Type" v-model="fuelType" :options="fuels"></b-form-select>
         <br/><br/><b-button variant="success" v-on:click="getPredictions">Predict Me Baby!</b-button>
         <br/><br/>
-        <Station v-if="results" :result="results"/>
+        <Station v-if="results" :result="results" :key="stationKey"/>
       </div>
     </div>
 </template>
@@ -19,18 +19,20 @@ import itemTemplate from './ItemTemplate.vue';
 import Autocomplete from 'v-autocomplete';
 import Station from './Station.vue'
 import axios from 'axios';
+
 export default {
   name: 'FuelPredictByStation',
   data: function() {
     return {
-      item: {},
+      item: null,
       itemTemplate,
       items: this.hardcodedStationList,
       results: null,
       startDate: null,
       endDate: null,
       fuelType: null,
-      fuels: [{ text: 'Fuel Type', value: null }, 'E10', 'U91', 'P98', 'P95']
+      fuels: [{ text: 'Fuel Type', value: null }, 'E10', 'U91', 'P98', 'P95'],
+      stationKey: 0,
     }
   },
   components: {
@@ -52,7 +54,6 @@ export default {
             }
         }).then(response => {
             let token = response.data.tok
-            console.log(token)
             axios({
                 method: 'POST',
                 url: 'http://localhost:8003/fuel/predictions/'+this.item.id,
@@ -66,19 +67,19 @@ export default {
                 prediction_start: this.startDate,
                 prediction_end: this.endDate
             })
-        }).then(response => (this.results = response.data[0]))    
-        })
-       
+        }).then(response => {
+          this.results = response.data[0]
+          this.stationKey += 1
+        })})       
     },
     itemSelected (item) {
       this.item = item
-      
     },
     setLabel (item) {
       if (item != null) {
         return item.name
       }
-      return ""
+      return null
     },
     inputChange (text) {
       this.items = this.hardcodedStationList.filter(item => item.name.toLowerCase().includes(text.toLowerCase()))

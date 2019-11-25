@@ -98,7 +98,6 @@ def daterange(start_date, end_date):
 class FuelPredictionsForStation(Resource):
     @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station",
             security='AUTH_TOKEN')
-    # @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
     @api.response(400, "Fuel Type incorrect")
     @api.response(400, "Date Type incorrect")
@@ -214,14 +213,13 @@ class TimeForPriceAtStation(Resource):
 class FuelPredictionsForLocation(Resource):
     @api.doc(description="Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)",
             security='AUTH_TOKEN')
-    @api.expect(location_model, validate=True)
     @api.response(200, 'Successful')
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     @api.response(401, "Authentication token missing or invalid")
-    @authentication.authenticate(api, auth)
+    # @authentication.authenticate(api, auth)
     def post(self):
-        req = request.json
+        req = request.get_json(force=True)
 
         fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
@@ -251,24 +249,36 @@ class FuelPredictionsForLocation(Resource):
             for single_date in daterange(start_date, end_date):
                 date_string = single_date.strftime("%Y-%m-%d")
                 station_prices.append(round(float(fm.get_prediction(single_date, station, fuel_type)), 2))
-            print(station_prices)
-            print(station)
             prices[station] = station_prices
 
-        print(prices)
         ret = []
-
-        for station in prices:
-            price = (round(float(np.mean(prices[station])), 2))
-            print(station)
-            tmp = {
+        tmp = {
             'Status' : 'OK',
             'Requested_Loc' : req_loc,
-            'Station_Code' : int(station),
             'Fuel_Type' : fuel_type,
-            'AveragePrice' : price
+            'AveragePrice' : 0,
+            'Stations': list()
+        }
+
+        average_prices = list()
+
+        for station_code in prices:
+            df1 = df.query('ServiceStationCode == {}'.format(int(station_code)))
+            if not df1.empty:
+                [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
+
+            price = round(float(np.mean(prices[station_code])), 2)
+            average_prices.append(price)
+            station = {
+                'Station_Name' : name,
+                'Station_Address' : address,
+                'Price': price
             }
-            ret.append(tmp)
+            tmp['Stations'].append(station)
+
+        tmp['AveragePrice'] = round(float(np.mean(average_prices)), 2)
+        
+        ret.append(tmp)
 
         #track_event(category='Fuel Prediction', action='For Location')
 
