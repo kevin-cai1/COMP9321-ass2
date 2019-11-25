@@ -255,8 +255,8 @@ class FuelPredictionsForLocation(Resource):
             #track_event(category='Fuel Prediction', action='Invalid Location')
         
         print(df1)
-
-        stations = df1.ServiceStationCode_x.unique()
+        
+        stations = df1.ServiceStationCode.unique()
         print(stations)
         #=== tony's changes
         #stations = loc_df.ServiceStationCode.unique()
@@ -328,7 +328,8 @@ class AverageFuelPredictionForSuburb(Resource):
         if loc_df.empty:
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
-
+        
+        print(loc_df.head(10).to_string())
         stations = loc_df.ServiceStationCode.unique()
 
         start_date = _parse_date(req['prediction_start'])
@@ -366,13 +367,11 @@ def _parse_date(d: str) -> date:
 # Returns empty dataframe if none match
 def _location_query(loc: str, df: pd.DataFrame) -> pd.DataFrame:
     # Postcode
-    if (re.fullmatch(r'^[0-9]{4}$', loc)
-    and loc in df['Postcode'].unique()):
+    if re.fullmatch(r'^[0-9]{4}$', loc):
         #track_event(category='Fuel Prediction', action='Postcode Entered')
         result = df.query('Postcode == {}'.format(loc))
     # Surburb
-    elif (re.fullmatch(r'^\w+$', loc)
-    and loc in df['Suburb'].unique()):
+    elif re.fullmatch(r'^\w+$', loc):
         result = df.query('Suburb == {}'.format(loc))
         #track_event(category='Fuel Prediction', action='Suburb Entered')
     else:
@@ -395,13 +394,10 @@ if __name__ == "__main__":
     df = df.dropna()
     df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(fm.extract_date)
     
-    map_df = pd.read_csv("station_code_mapping.csv")   
-    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+    map_df = pd.read_csv("station_code_mapping.csv")
+    df = df.merge(map_df, how='inner', on='ServiceStationName')    
     df['Suburb'] = df['Suburb'].str.lower()
     print(df)
-
-    map_df = pd.read_csv("station_code_mapping.csv")
-    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')
 
     #print(df1.head(5).to_string())
 
