@@ -98,7 +98,7 @@ class FuelPredictionsForStation(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, "Station not found")
     @api.response(401, "Authentication token missing or invalid")
-    @authentication.authenticate(api, auth)
+    ##@authentication.authenticate(api, auth)
     def post(self, station_code):
         search = request.json
 
@@ -153,7 +153,7 @@ class TimeForPriceAtStation(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Station not found')
     @api.response(401, "Authentication token missing or invalid")
-    @authentication.authenticate(api, auth)
+    #@authentication.authenticate(api, auth)
     def post(self, station_code):
         search = request.json
 
@@ -209,7 +209,7 @@ class FuelPredictionsForLocation(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     @api.response(401, "Authentication token missing or invalid")
-    @authentication.authenticate(api, auth)
+    #@authentication.authenticate(api, auth)
     def post(self):
         location = request.json
 
@@ -271,12 +271,12 @@ class AverageFuelPredictionForSuburb(Resource):
     @api.response(400, "Fuel Type incorrect")
     @api.response(404, 'Location not found')
     @api.response(401, "Authentication token missing or invalid")
-    @authentication.authenticate(api, auth)
+    #@authentication.authenticate(api, auth)
     def post(self):
-        location = request.json
+        req = request.json
 
-        req_loc = location['named_location']
-        fuel_type = location['fuel_type'].upper()
+        req_loc = req['named_location']
+        fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
@@ -295,8 +295,8 @@ class AverageFuelPredictionForSuburb(Resource):
 
         stations = df1.ServiceStationCode.unique()
 
-        start_date = date.fromisoformat(location['prediction_start'])
-        end_date = date.fromisoformat(location['prediction_end'])
+        start_date = _parse_date(req['prediction_start'])
+        end_date = _parse_date(req['prediction_end'])
 
         prices= []
 
@@ -320,7 +320,11 @@ class AverageFuelPredictionForSuburb(Resource):
 
         return ret
 
-
+def _parse_date(d: str) -> date:
+    try:
+        return date.fromisoformat(d)
+    except ValueError:
+        api.abort(400, "Date {} is wrong format, expected YYYY-MM-DD".format(d))
 
 
 if __name__ == "__main__":
