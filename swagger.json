@@ -1,0 +1,305 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+        "/fuel/predictions/average": {
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "Authentication token missing or invalid"
+                    },
+                    "404": {
+                        "description": "Location not found"
+                    },
+                    "400": {
+                        "description": "Fuel Type incorrect"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Returns average predicted fuel price for a given suburb",
+                "operationId": "post_average_fuel_prediction_for_suburb",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/location"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "AUTH_TOKEN": []
+                    }
+                ],
+                "tags": [
+                    "Fuel Prediction"
+                ]
+            }
+        },
+        "/fuel/predictions/location": {
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "Authentication token missing or invalid"
+                    },
+                    "404": {
+                        "description": "Location not found"
+                    },
+                    "400": {
+                        "description": "Fuel Type incorrect"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Retuns fuel prediction prices for a single fuel type and a named location (suburb/postcode)",
+                "operationId": "post_fuel_predictions_for_location",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/location"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "AUTH_TOKEN": []
+                    }
+                ],
+                "tags": [
+                    "Fuel Prediction"
+                ]
+            }
+        },
+        "/fuel/predictions/time/{station_code}": {
+            "parameters": [
+                {
+                    "name": "station_code",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "Authentication token missing or invalid"
+                    },
+                    "404": {
+                        "description": "Station not found"
+                    },
+                    "400": {
+                        "description": "Fuel Type incorrect"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Returns earliest time for a predicted match to a given price at a station",
+                "operationId": "post_time_for_price_at_station",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/price"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "AUTH_TOKEN": []
+                    }
+                ],
+                "tags": [
+                    "Fuel Prediction"
+                ]
+            }
+        },
+        "/fuel/predictions/{station_code}": {
+            "parameters": [
+                {
+                    "description": "A petrol station station_code",
+                    "name": "station_code",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "Authentication token missing or invalid"
+                    },
+                    "404": {
+                        "description": "Station not found"
+                    },
+                    "400": {
+                        "description": "Fuel Type incorrect"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Returns fuel prediction prices for a single fuel type and petrol station",
+                "operationId": "post_fuel_predictions_for_station",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/search"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "AUTH_TOKEN": []
+                    }
+                ],
+                "tags": [
+                    "Fuel Prediction"
+                ]
+            }
+        },
+        "/token": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Gives an authentication token",
+                "operationId": "get_token",
+                "security": [
+                    {
+                        "API_KEY": []
+                    }
+                ],
+                "tags": [
+                    "Fuel Prediction"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Fuel Prediction API",
+        "version": "1.0",
+        "description": "API to return predicted fuel prices"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "API_KEY": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "API_KEY"
+        },
+        "AUTH_TOKEN": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "AUTH_TOKEN"
+        }
+    },
+    "tags": [
+        {
+            "name": "Fuel Prediction",
+            "description": "Default namespace"
+        }
+    ],
+    "definitions": {
+        "search": {
+            "properties": {
+                "fuel_type": {
+                    "type": "string",
+                    "description": "Fuel type for the fuel prediction"
+                },
+                "prediction_start": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "start date for prediction period (yyyy-mm-dd)"
+                },
+                "prediction_end": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "end date for prediction period (yyyy-mm-dd)"
+                }
+            },
+            "type": "object"
+        },
+        "price": {
+            "properties": {
+                "fuel_type": {
+                    "type": "string",
+                    "description": "Fuel type for the fuel prediction"
+                },
+                "price_req": {
+                    "type": "integer",
+                    "description": "Desired Price for date prediction"
+                },
+                "prediction_start": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "start date for prediction period (yyyy-mm-dd)"
+                },
+                "prediction_end": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "end date for prediction period (yyyy-mm-dd)"
+                }
+            },
+            "type": "object"
+        },
+        "location": {
+            "properties": {
+                "fuel_type": {
+                    "type": "string",
+                    "description": "Fuel type for the fuel prediction",
+                    "example": "E10",
+                    "enum": [
+                        "E10",
+                        "U91",
+                        "P98",
+                        "P95"
+                    ]
+                },
+                "named_location": {
+                    "type": "string",
+                    "description": "suburb or postcode"
+                },
+                "prediction_start": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "start date for prediction period (yyyy-mm-dd)"
+                },
+                "prediction_end": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "end date for prediction period (yyyy-mm-dd)"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        }
+    }
+}
