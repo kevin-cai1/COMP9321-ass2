@@ -102,28 +102,19 @@ class FuelPredictionsForStation(Resource):
     @api.response(401, "Authentication token missing or invalid")
     ##@authentication.authenticate(api, auth)
     def post(self, station_code):
-        search = request.json
+        req = request.json
 
         if station_code not in df.ServiceStationCode:
             #track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
-        fuel_type = search['fuel_type'].upper()
+        fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
-        try:
-            start_date = date.fromisoformat(search['prediction_start'])
-        except ValueError:
-            api.abort(400, "Date type is incorrect")
 
-        try:
-             end_date = date.fromisoformat(search['prediction_end'])
-        except ValueError:
-            api.abort(400, "Date type is incorrect")
-
-
-
+        start_date = _parse_date(req['prediction_start'])
+        end_date = _parse_date(req['prediction_end'])
         prices = {}
 
         for single_date in daterange(start_date, end_date):
@@ -165,20 +156,20 @@ class TimeForPriceAtStation(Resource):
     @api.response(401, "Authentication token missing or invalid")
     #@authentication.authenticate(api, auth)
     def post(self, station_code):
-        search = request.json
+        req = request.json
 
         if station_code not in df.ServiceStationCode:
             #track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
-        fuel_type = search['fuel_type'].upper()
+        fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
-        start_date = date.fromisoformat(search['prediction_start'])
-        end_date = date.fromisoformat(search['prediction_end'])
-        price_req = search['price_req']
+        start_date = _parse_date(req['prediction_start'])
+        end_date = _parse_date(req['prediction_end'])
+        price_req = req['price_req']
 
         for single_date in daterange(start_date, end_date):
             if int(fm.get_prediction(single_date, station_code, fuel_type)) <= price_req:
@@ -228,8 +219,8 @@ class FuelPredictionsForLocation(Resource):
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
-        req_loc = req['named_location']
-        loc_df = _location_query(req_loc.lower(), df)
+        req_loc = req['named_location'].lower()
+        loc_df = _location_query(req_loc, df)
         if loc_df.empty:
            return {"message": "Location {} not found".format(req_loc)}, 404
            #track_event(category='Fuel Prediction', action='Invalid Location')
@@ -287,12 +278,12 @@ class AverageFuelPredictionForSuburb(Resource):
     #@authentication.authenticate(api, auth)
     def post(self):
         req = request.json
-        
+
         fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
-    
+
         req_loc = req['named_location'].lower()
         loc_df = _location_query(req_loc, df)
         if loc_df.empty:
@@ -330,10 +321,11 @@ def _location_query(loc: str, df: pd.DataFrame) -> pd.DataFrame:
     # Postcode
     if re.fullmatch(r'^[0-9]{4}$', loc):
         #track_event(category='Fuel Prediction', action='Postcode Entered')
-        result = df.query('Postcode == {}'.format(loc))
+        result = df.query('Postcode == @loc')
     # Surburb
     elif re.fullmatch(r'^\w+$', loc):
-        result = df.query('Suburb == {}'.format(loc))
+        result = df.query('Suburb == @loc')
+        print("hello?")
         #track_event(category='Fuel Prediction', action='Suburb Entered')
     else:
         result = pd.DataFrame()
