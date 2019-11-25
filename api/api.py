@@ -325,7 +325,6 @@ def _location_query(loc: str, df: pd.DataFrame) -> pd.DataFrame:
     # Surburb
     elif re.fullmatch(r'^\w+$', loc):
         result = df.query('Suburb == @loc')
-        print("hello?")
         #track_event(category='Fuel Prediction', action='Suburb Entered')
     else:
         result = pd.DataFrame()
