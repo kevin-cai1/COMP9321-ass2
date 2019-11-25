@@ -17,6 +17,7 @@ import authentication
 
 import json
 import enum
+import re
 from datetime import date
 from numpy.core.arrayprint import DatetimeFormat
 from datetime import timedelta, datetime
@@ -120,7 +121,7 @@ class FuelPredictionsForStation(Resource):
             prices[single_date.strftime("%Y-%m-%d")] = fm.get_prediction(single_date, station_code, fuel_type)
 
         ret = []
-    
+
         df1 = df.query('ServiceStationCode == {}'.format(station_code))
         if not df1.empty:
             [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
@@ -210,30 +211,23 @@ class FuelPredictionsForLocation(Resource):
     @api.response(401, "Authentication token missing or invalid")
     @authentication.authenticate(api, auth)
     def post(self):
-        location = request.json
+        req = request.json
 
-        req_loc = location['named_location']
-        fuel_type = location['fuel_type'].upper()
+        req_loc = req['named_location']
+        fuel_type = req['fuel_type'].upper()
         if fuel_type not in fuel_list:
             #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
-        if req_loc in df.Suburb.unique():
-            #track_event(category='Fuel Prediction', action='Suburb Entered')
-            print('its a suburb!')
-            df1 = df.loc[df['Suburb'] == req_loc]
-        elif req_loc not in df.Postcode.unique():
-            #track_event(category='Fuel Prediction', action='Postcode Entered')
-            print('its a postcode!')
-            df1 = df.query('Postcode == {}'.format(req_loc))
-        else:
+        df1 = _location_query(req_loc, df)
+        if df1.empty:
             #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
         stations = df1.ServiceStationCode.unique()
 
-        start_date = date.fromisoformat(location['prediction_start'])
-        end_date = date.fromisoformat(location['prediction_end'])
+        start_date = date.fromisoformat(req['prediction_start'])
+        end_date = date.fromisoformat(req['prediction_end'])
 
         prices= {}
 
@@ -319,23 +313,38 @@ class AverageFuelPredictionForSuburb(Resource):
 
         return ret
 
+# Returns subset of dataframe matching loc
+# Returns empty dataframe if none match
+def _location_query(loc: str, df: pd.DataFrame) -> pd.DataFrame:
+    # Postcode
+    if (re.fullmatch(r'^[0-9]{4}$', loc)
+    and loc in df['Postcode'].unique()):
+        #track_event(category='Fuel Prediction', action='Postcode Entered')
+        result = df.query('Postcode == {}'.format(loc))
+    # Surburb
+    elif (re.fullmatch(r'^\w+$', loc)
+    and loc in df['Suburb'].unique()):
+        result = df.query('Suburb == {}'.format(loc))
+        #track_event(category='Fuel Prediction', action='Suburb Entered')
+    else:
+        result = pd.DataFrame()
 
-
+    return result
 
 if __name__ == "__main__":
     #df = fm.api_read()
     df = pd.read_excel("fuel_data/price_history_checks_oct2019.xlsx", skiprows=2)
-    
-    
+
+
     df2 = df.query('1000 <= Postcode <= 2249')
     df3 = df.query('2760 <= Postcode <= 2770')
- 
+
     df = df2.append(df3, ignore_index=True)
     df = df.dropna()
     df['PriceUpdatedDate'] = df['PriceUpdatedDate'].apply(fm.extract_date)
-    
-    map_df = pd.read_csv("station_code_mapping.csv")   
-    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')    
+
+    map_df = pd.read_csv("station_code_mapping.csv")
+    df = pd.merge(map_df, df, how='inner', on='ServiceStationName')
 
     #print(df1.head(5).to_string())
 
