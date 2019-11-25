@@ -3,6 +3,8 @@ from flask import Flask, request
 from flask_restplus import fields
 import pandas as pd
 import numpy as np
+from backports.datetime_fromisoformat import MonkeyPatch
+MonkeyPatch.patch_fromisoformat()
 
 #from analytics import #track_event
 
@@ -25,6 +27,7 @@ from flask.json import jsonify
 from _ast import If
 from pandas.tests.extension.test_external_block import df
 from numpy.core.defchararray import lower
+from flask_cors import CORS
 
 app = Flask(__name__)
 api = Api(app,
@@ -44,6 +47,7 @@ api = Api(app,
               }
           })
 auth = authentication.AuthToken()
+CORS(app)
 
 @api.route('/token')
 class Token(Resource):
@@ -94,7 +98,7 @@ def daterange(start_date, end_date):
 class FuelPredictionsForStation(Resource):
     @api.doc(description="Returns fuel prediction prices for a single fuel type and petrol station",
             security='AUTH_TOKEN')
-    @api.expect(search_package, validate=True)
+    # @api.expect(search_package, validate=True)
     @api.response(200, "Successful")
     @api.response(400, "Fuel Type incorrect")
     @api.response(400, "Date Type incorrect")
@@ -102,7 +106,7 @@ class FuelPredictionsForStation(Resource):
     @api.response(401, "Authentication token missing or invalid")
     @authentication.authenticate(api, auth)
     def post(self, station_code):
-        req = request.json
+        req = request.get_json(force=True)
 
         if station_code not in df.ServiceStationCode:
             #track_event(category='Fuel Prediction', action='Wrong Service Station')
@@ -131,11 +135,16 @@ class FuelPredictionsForStation(Resource):
                 'Station_Code' : station_code,
                 'Station_Name' : name,
                 'Station_Address' : address,
-                'Fuel_Type' : fuel_type
+                'Fuel_Type' : fuel_type,
+                'Prices': list()
                 }
 
         for x in prices:
-            tmp[x] = round(float(prices[x]), 2)
+            price = {
+                'date': x,
+                'price': round(float(prices[x]), 2)
+            }
+            tmp['Prices'].append(price)
 
 
         ret.append(tmp)
@@ -156,7 +165,7 @@ class TimeForPriceAtStation(Resource):
     @api.response(401, "Authentication token missing or invalid")
     @authentication.authenticate(api, auth)
     def post(self, station_code):
-        req = request.json
+        req = request.get_json(force=True)
 
         if station_code not in df.ServiceStationCode:
             #track_event(category='Fuel Prediction', action='Wrong Service Station')
