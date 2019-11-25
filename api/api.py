@@ -4,7 +4,7 @@ from flask_restplus import fields
 import pandas as pd
 import numpy as np
 
-#from analytics import track_event
+#from analytics import #track_event
 
 import logging
 import requests
@@ -103,12 +103,12 @@ class FuelPredictionsForStation(Resource):
         search = request.json
 
         if station_code not in df.ServiceStationCode:
-            track_event(category='Fuel Prediction', action='Wrong Service Station')
+            #track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
         fuel_type = search['fuel_type'].upper()
         if fuel_type not in fuel_list:
-            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
+            #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         start_date = date.fromisoformat(search['prediction_start'])
@@ -120,24 +120,25 @@ class FuelPredictionsForStation(Resource):
             prices[single_date.strftime("%Y-%m-%d")] = fm.get_prediction(single_date, station_code, fuel_type)
 
         ret = []
-
+    
         df1 = df.query('ServiceStationCode == {}'.format(station_code))
-        [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
+        if not df1.empty:
+            [name, address] = df1[['ServiceStationName', 'Address']].iloc[0]
 
-        tmp = {
-            'Status' : 'OK',
-            'Station_Code' : station_code,
-            'Station_Name' : name,
-            'Station_Address' : address,
-            'Fuel_Type' : fuel_type
-            }
+            tmp = {
+                'Status' : 'OK',
+                'Station_Code' : station_code,
+                'Station_Name' : name,
+                'Station_Address' : address,
+                'Fuel_Type' : fuel_type
+                }
 
-        for x in prices:
-            tmp[x] = int(prices[x])
+            for x in prices:
+                tmp[x] = int(prices[x])
 
-        ret.append(tmp)
+            ret.append(tmp)
 
-        track_event(category='Fuel Prediction', action='For Station')
+        #track_event(category='Fuel Prediction', action='For Station')
 
         return ret
 
@@ -156,12 +157,12 @@ class TimeForPriceAtStation(Resource):
         search = request.json
 
         if station_code not in df.ServiceStationCode:
-            track_event(category='Fuel Prediction', action='Wrong Service Station')
+            #track_event(category='Fuel Prediction', action='Wrong Service Station')
             api.abort(404, "Station {} doesn't exist".format(station_code))
 
         fuel_type = search['fuel_type'].upper()
         if fuel_type not in fuel_list:
-            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
+            #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         start_date = date.fromisoformat(search['prediction_start'])
@@ -192,7 +193,7 @@ class TimeForPriceAtStation(Resource):
 
         ret.append(tmp)
 
-        track_event(category='Fuel Prediction', action='Time For Prices')
+        #track_event(category='Fuel Prediction', action='Time For Prices')
 
         return ret
 
@@ -213,19 +214,19 @@ class FuelPredictionsForLocation(Resource):
         req_loc = location['named_location']
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
-            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
+            #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         if req_loc in df.Suburb.unique():
-            track_event(category='Fuel Prediction', action='Suburb Entered')
+            #track_event(category='Fuel Prediction', action='Suburb Entered')
             print('its a suburb!')
             df1 = df.loc[df['Suburb'] == req_loc]
         elif req_loc not in df.Postcode.unique():
-            track_event(category='Fuel Prediction', action='Postcode Entered')
+            #track_event(category='Fuel Prediction', action='Postcode Entered')
             print('its a postcode!')
             df1 = df.query('Postcode == {}'.format(req_loc))
         else:
-            track_event(category='Fuel Prediction', action='Invalid Location')
+            #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
         stations = df1.ServiceStationCode.unique()
@@ -254,7 +255,7 @@ class FuelPredictionsForLocation(Resource):
 
         ret.append(tmp)
 
-        track_event(category='Fuel Prediction', action='For Location')
+        #track_event(category='Fuel Prediction', action='For Location')
 
         return ret
 
@@ -275,19 +276,19 @@ class AverageFuelPredictionForSuburb(Resource):
         req_loc = location['named_location']
         fuel_type = location['fuel_type'].upper()
         if fuel_type not in fuel_list:
-            track_event(category='Fuel Prediction', action='Wrong Fuel Type')
+            #track_event(category='Fuel Prediction', action='Wrong Fuel Type')
             api.abort(400, "Fuel Type {} is incorrect".format(fuel_type))
 
         if req_loc in df.Suburb.unique():
-            track_event(category='Fuel Prediction', action='Location Entered')
+            #track_event(category='Fuel Prediction', action='Location Entered')
             print('its a suburb!')
             df1 = df.loc[df['Suburb'] == req_loc]
         elif req_loc not in df.Postcode.unique():
-            track_event(category='Fuel Prediction', action='Postcode Entered')
+            #track_event(category='Fuel Prediction', action='Postcode Entered')
             print('its a postcode!')
             df1 = df.query('Postcode == {}'.format(req_loc))
         else:
-            track_event(category='Fuel Prediction', action='Invalid Location')
+            #track_event(category='Fuel Prediction', action='Invalid Location')
             return {"message": "Location {} not found".format(req_loc)}, 404
 
         stations = df1.ServiceStationCode.unique()
@@ -313,7 +314,7 @@ class AverageFuelPredictionForSuburb(Resource):
 
         ret.append(tmp)
 
-        track_event(category='Fuel Prediction', action='Average Fuel For Suburbs')
+        #track_event(category='Fuel Prediction', action='Average Fuel For Suburbs')
 
         return ret
 
