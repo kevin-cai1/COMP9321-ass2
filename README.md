@@ -3,6 +3,10 @@ Data Analytics Service for COMP9321
 
 Fuel Price Predictor using data from NSW FuelCheck
 
+FRONTEND
+The web service can be accessed in UI. Follow instructions in UI to run the app
+
+BACKEND
 The API and swagger docs can be accessed by running 'python3 api.py'
 
 The current fuel prediction model can be found in fuel_model/fuel_model.py
