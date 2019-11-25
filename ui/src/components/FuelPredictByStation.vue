@@ -42,19 +42,33 @@ export default {
   },
   methods: {
     getPredictions () {
-      axios({
-        method: 'POST',
-        url: 'http://localhost:8003/fuel/predictions/'+this.item.id,
-        headers: {
-          'Accept': 'text/plain',
-          'Content-Type': 'text/plain'
-        },
-        data: JSON.stringify({
-          fuel_type: this.fuelType,
-          prediction_start: this.startDate,
-          prediction_end: this.endDate
+        axios({
+            method: 'GET',
+            url: 'http://localhost:8003/token',
+            headers: {
+            'Accept': 'text/plain',
+            'Content-Type': 'text/plain',
+            'API_KEY': 'poontang'
+            }
+        }).then(response => {
+            let token = response.data.tok
+            console.log(token)
+            axios({
+                method: 'POST',
+                url: 'http://localhost:8003/fuel/predictions/'+this.item.id,
+                headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'text/plain',
+                'AUTH_TOKEN': token
+                },
+                data: JSON.stringify({
+                fuel_type: this.fuelType,
+                prediction_start: this.startDate,
+                prediction_end: this.endDate
+            })
+        }).then(response => (this.results = response.data[0]))    
         })
-      }).then(response => (this.results = response.data[0]))
+       
     },
     itemSelected (item) {
       this.item = item
